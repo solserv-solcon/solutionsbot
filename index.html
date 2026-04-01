@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solutions Knowledge Base</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+.app { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 14px; }
+header { background: linear-gradient(135deg, #1F4E79, #2E75B6); color: white; border-radius: 16px; padding: 18px 24px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 16px rgba(31,78,121,.2); }
+.hico { width: 46px; height: 46px; background: rgba(255,255,255,.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.htxt h1 { font-size: 1.1rem; font-weight: 700; }
+.htxt p { font-size: .74rem; opacity: .82; margin-top: 2px; }
+.hbtns { margin-left: auto; display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.hbtn { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); color: white; border-radius: 7px; padding: 5px 12px; font-size: .74rem; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.hbtn:hover { background: rgba(255,255,255,.26); }
+.sbar { background: white; border-radius: 10px; padding: 9px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.06); display: flex; align-items: center; gap: 8px; font-size: .76rem; color: #64748b; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot.green { background: #22c55e; }
+.dot.amber { background: #f59e0b; animation: bl 1s infinite; }
+.dot.red { background: #ef4444; }
+@keyframes bl { 0%,100%{opacity:1} 50%{opacity:.35} }
+.chat-wrap { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.07); display: flex; flex-direction: column; overflow: hidden; }
+.messages { overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 11px; scroll-behavior: smooth; min-height: 460px; max-height: 540px; }
+.msg { display: flex; gap: 9px; max-width: 90%; animation: fi .22s ease; }
+@keyframes fi { from{opacity:0;transform:translateY(5px)} to{opacity:1} }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg.bot { align-self: flex-start; }
+.av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.bot .av { background: linear-gradient(135deg, #1F4E79, #2E75B6); }
+.user .av { background: #e2e8f0; }
+.bub { padding: 10px 14px; border-radius: 13px; font-size: .875rem; line-height: 1.7; max-width: 100%; }
+.bot .bub { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 3px; }
+.user .bub { background: linear-gradient(135deg, #1F4E79, #2E75B6); color: white; border-bottom-right-radius: 3px; }
+.typing { display: flex; gap: 4px; align-items: center; padding: 3px 0; }
+.typing span { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; animation: bo 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes bo { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-top: 1px solid #f1f5f9; }
+.chip { background: #f0f7ff; border: 1px solid #bfdbfe; color: #1D4ED8; border-radius: 18px; padding: 5px 12px; font-size: .75rem; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.chip:hover { background: #dbeafe; }
+.input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #f1f5f9; background: #fafafa; }
+.input-row input { flex: 1; border: 1px solid #cbd5e1; border-radius: 9px; padding: 9px 13px; font-size: .875rem; outline: none; font-family: inherit; color: #1e293b; }
+.input-row input:focus { border-color: #2E75B6; box-shadow: 0 0 0 3px rgba(46,117,182,.15); }
+.input-row input:disabled { background: #f1f5f9; color: #94a3b8; }
+.send { background: linear-gradient(135deg, #1F4E79, #2E75B6); color: white; border: none; border-radius: 9px; width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.send:disabled { opacity: .4; cursor: not-allowed; }
+.send:hover:not(:disabled) { opacity: .85; }
+.notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="hico">&#128202;</div>
+    <div class="htxt">
+      <h1>Solutions Knowledge Base</h1>
+      <p>Ask anything — I will find the resolution from your database</p>
+    </div>
+    <div class="hbtns">
+      <button class="hbtn" onclick="loadEntries()">&#128260; Refresh</button>
+      <button class="hbtn" onclick="openSheet()">&#128202; Edit Sheet</button>
+    </div>
+  </header>
+  <div class="sbar">
+    <div class="dot amber" id="sDot"></div>
+    <span id="sTxt">Loading knowledge base...</span>
+  </div>
+  <div class="chat-wrap">
+    <div class="messages" id="messages">
+      <div class="msg bot">
+        <div class="av">&#128202;</div>
+        <div class="bub" id="welcomeBub">Connecting to the knowledge base... please wait.</div>
+      </div>
+    </div>
+    <div class="chips" id="chips" style="display:none">
+      <span class="chip" onclick="ask(this)">How do I file a leave?</span>
+      <span class="chip" onclick="ask(this)">I forgot my password</span>
+      <span class="chip" onclick="ask(this)">When is payroll?</span>
+      <span class="chip" onclick="ask(this)">What is the WFH policy?</span>
+      <span class="chip" onclick="ask(this)">How to process a refund?</span>
+      <span class="chip" onclick="ask(this)">What are the leave types?</span>
+    </div>
+    <div class="input-row">
+      <input type="text" id="chatInput" placeholder="Loading..." disabled onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <button class="send" id="sendBtn" onclick="sendMessage()" disabled>&#9658;</button>
+    </div>
+  </div>
+  <div class="notice">Powered by Gemini AI &nbsp;&#183;&nbsp; Data from your Google Sheet &nbsp;&#183;&nbsp; Edit the sheet anytime then click Refresh</div>
+</div>
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBffR4VBnbAlS_Z_puYFZnU1n4L789Mp_jAZC-0wFBHqTcmoMkvqZe-CM97SxaLVwVzg/exec';
+var SHEET_ID = '1ldBim0y1pt2WPY21QgpqwotC4Su_UN2M';
+var chatHistory = [];
+function openSheet() { window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit', '_blank'); }
+function loadEntries() {
+  setSt('amber', 'Loading from Google Sheet...');
+  document.getElementById('chatInput').disabled = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('chips').style.display = 'none';
+  fetch(SCRIPT_URL)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data.ok) throw new Error(data.error || 'Apps Script returned an error');
+      var count = data.count || (data.entries ? data.entries.length : 0);
+      chatHistory = [];
+      setSt('green', count + ' entries loaded - ' + new Date().toLocaleTimeString());
+      setWelcome('Ready! I have <strong>' + count + ' entries</strong> in the knowledge base.<br><br>Ask me anything and I will find the right resolution for you.');
+      document.getElementById('chatInput').disabled = false;
+      document.getElementById('chatInput').placeholder = 'Describe a requirement or ask a question...';
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('chips').style.display = 'flex';
+    })
+    .catch(function(e) {
+      setSt('red', 'Could not connect');
+      setWelcome('Could not connect to the knowledge base.<br><br><strong>Error:</strong> ' + e.message + '<br><br>Please click <strong>Refresh</strong> to try again.');
+    });
+}
+function sendMessage() {
+  var input = document.getElementById('chatInput');
+  var q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMsg('user', q);
+  chatHistory.push({ role: 'user', content: q });
+  addTyping();
+  document.getElementById('sendBtn').disabled = true;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ question: q, history: chatHistory.slice(-6) })
+  })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data.ok) throw new Error(data.error || 'No answer returned');
+      var reply = data.answer;
+      chatHistory.push({ role: 'assistant', content: reply });
+      removeTyping();
+      addMsg('bot', reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>'));
+    })
+    .catch(function(e) {
+      removeTyping();
+      addMsg('bot', 'Could not get a response. Error: ' + e.message + '<br><br>Please click <strong>Refresh</strong> and try again.');
+    })
+    .finally(function() { document.getElementById('sendBtn').disabled = false; });
+}
+function ask(chip) { document.getElementById('chatInput').value = chip.textContent; sendMessage(); }
+function setSt(c, t) { document.getElementById('sDot').className = 'dot ' + c; document.getElementById('sTxt').textContent = t; }
+function setWelcome(h) { var el = document.getElementById('welcomeBub'); if (el) el.innerHTML = h; }
+function addMsg(role, html) {
+  var c = document.getElementById('messages');
+  var d = document.createElement('div');
+  d.className = 'msg ' + role;
+  d.innerHTML = '<div class="av">&#128202;</div><div class="bub">' + html + '</div>';
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function addTyping() {
+  var c = document.getElementById('messages');
+  var d = document.createElement('div');
+  d.className = 'msg bot'; d.id = 'typing';
+  d.innerHTML = '<div class="av">&#128202;</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div>';
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function removeTyping() { var el = document.getElementById('typing'); if (el) el.remove(); }
+loadEntries();
+</script>
+</body>
+</html>
