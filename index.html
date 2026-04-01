@@ -211,12 +211,14 @@ function score(entry,tokens){
 
 function search(q){
   var tokens=tokenize(q),expanded=expand(tokens);
-  return entries.map(function(e){return{entry:e,score:score(e,expanded)};})
-    .filter(function(s){return s.score>0;})
-    .sort(function(a,b){return b.score-a.score;})
-    .slice(0,1).map(function(s){return s.entry;});
+  var scored=entries.map(function(e){return{entry:e,score:score(e,tokens)};})
+    .filter(function(s){return s.score>=15;})
+    .sort(function(a,b){return b.score-a.score;});
+  if(!scored.length)return[];
+  var best=scored[0].score;
+  return scored.filter(function(s){return s.score>=best*0.75;}).slice(0,1).map(function(s){return s.entry;});
 }
-
+  
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function formatEntry(e){
