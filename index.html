@@ -16,8 +16,6 @@ body {
   padding: 20px;
 }
 .app { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 14px; }
-
-/* Header */
 header {
   background: linear-gradient(135deg, #1F4E79, #2E75B6);
   color: white; border-radius: 16px; padding: 18px 24px;
@@ -38,8 +36,6 @@ header {
   cursor: pointer; transition: background .15s; white-space: nowrap;
 }
 .hbtn:hover { background: rgba(255,255,255,.26); }
-
-/* Status bar */
 .sbar {
   background: white; border-radius: 10px; padding: 9px 16px;
   box-shadow: 0 1px 4px rgba(0,0,0,.06);
@@ -50,8 +46,6 @@ header {
 .dot.amber { background: #f59e0b; animation: bl 1s infinite; }
 .dot.red   { background: #ef4444; }
 @keyframes bl { 0%,100%{opacity:1} 50%{opacity:.35} }
-
-/* Chat */
 .chat-wrap {
   background: white; border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,.07);
@@ -81,7 +75,6 @@ header {
 .typing span:nth-child(2) { animation-delay: .2s; }
 .typing span:nth-child(3) { animation-delay: .4s; }
 @keyframes bo { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
-
 .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-top: 1px solid #f1f5f9; }
 .chip {
   background: #f0f7ff; border: 1px solid #bfdbfe; color: #1D4ED8;
@@ -89,7 +82,6 @@ header {
   cursor: pointer; transition: all .15s; white-space: nowrap;
 }
 .chip:hover { background: #dbeafe; }
-
 .input-row {
   display: flex; gap: 8px; padding: 12px 16px;
   border-top: 1px solid #f1f5f9; background: #fafafa;
@@ -110,7 +102,6 @@ header {
 }
 .send:disabled { opacity: .4; cursor: not-allowed; }
 .send:hover:not(:disabled) { opacity: .85; }
-
 .notice {
   text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px;
   background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05);
@@ -119,7 +110,6 @@ header {
 </head>
 <body>
 <div class="app">
-
   <header>
     <div class="hico">🗂️</div>
     <div class="htxt">
@@ -162,21 +152,17 @@ header {
   <div class="notice">
     Powered by Claude AI &nbsp;·&nbsp; Data from your Google Sheet &nbsp;·&nbsp; Edit the sheet anytime then click 🔄 Refresh
   </div>
-
 </div>
-<script>
-// ── CONFIG — baked in, no setup needed ────────────────────────────
-var SCRIPT_URL = 'https://script.google.com/a/macros/sprout.ph/s/AKfycbzPoCiCnz5eJ0e2CzwKWvmlaPXT2DeuJFEPxwdLyyQZqBm5oZ3bKnQTkXIcfBwa2ZWxVg/exec';
-var SHEET_ID   = '1ldBim0y1pt2WPY21QgpqwotC4Su_UN2M';
 
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPoCiCnz5eJ0e2CzwKWvmlaPXT2DeuJFEPxwdLyyQZqBm5oZ3bKnQTkXIcfBwa2ZWxVg/exec';
+var SHEET_ID   = '1ldBim0y1pt2WPY21QgpqwotC4Su_UN2M';
 var chatHistory = [];
 
-// ── Open sheet ────────────────────────────────────────────────────
 function openSheet() {
   window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit', '_blank');
 }
 
-// ── Load entries ──────────────────────────────────────────────────
 function loadEntries() {
   setSt('amber', 'Loading from Google Sheet...');
   document.getElementById('chatInput').disabled = true;
@@ -200,23 +186,19 @@ function loadEntries() {
       document.getElementById('chips').style.display = 'flex';
     })
     .catch(function(e) {
-      setSt('red', 'Could not connect — ' + e.message);
+      setSt('red', 'Could not connect');
       setWelcome(
         'Could not connect to the knowledge base.<br><br>' +
-        '<strong>Things to check:</strong><br>' +
-        '1. Make sure the Apps Script is deployed as a Web App with <strong>Anyone</strong> access<br>' +
-        '2. Make sure your Google Sheet has data in the <strong>Solutions Database</strong> tab<br>' +
-        '3. Click <strong>🔄 Refresh</strong> to try again'
+        '<strong>Error:</strong> ' + e.message + '<br><br>' +
+        'Please click <strong>🔄 Refresh</strong> to try again.'
       );
     });
 }
 
-// ── Send message ──────────────────────────────────────────────────
 function sendMessage() {
   var input = document.getElementById('chatInput');
   var q = input.value.trim();
   if (!q) return;
-
   input.value = '';
   addMsg('user', q);
   chatHistory.push({ role: 'user', content: q });
@@ -259,9 +241,8 @@ function ask(chip) {
   sendMessage();
 }
 
-// ── UI helpers ────────────────────────────────────────────────────
 function setSt(c, t) {
-  document.getElementById('sDot').className  = 'dot ' + c;
+  document.getElementById('sDot').className   = 'dot ' + c;
   document.getElementById('sTxt').textContent = t;
 }
 function setWelcome(h) {
@@ -292,7 +273,6 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// ── Start ─────────────────────────────────────────────────────────
 loadEntries();
 </script>
 </body>
