@@ -367,7 +367,7 @@ function formatEntry(e){
 }
 
 function buildReply(results){
-  var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.85rem;font-weight:600;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+  var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
   if(!results.length) return rand(notFound);
   if(results.length===1) return rand(openers)+'<br><br>'+formatEntry(results[0])+footer;
   var h=rand(multiOpeners)+'<br><br>';
