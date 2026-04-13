@@ -9,8 +9,6 @@ A smart, searchable chatbot that helps solutions consultant, and account directo
 Access the chatbot here:
 **[https://yourusername.github.io/solutions-chatbot](https://yourusername.github.io/solutions-chatbot)**
 
-> Replace the link above with your actual GitHub Pages URL.
-
 ---
 
 ## 💡 What It Does
