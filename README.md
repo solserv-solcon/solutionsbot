@@ -1,6 +1,6 @@
 # 🗂️ Solutions Services Knowledge Base
 
-A smart, searchable chatbot that helps employees and customers find answers about HR policies, payroll, and company procedures — powered by your Google Sheet, hosted for free on GitHub Pages.
+A smart, searchable chatbot that helps solutions consultant, and account directors find answers about HR policies, payroll, and company procedures — powered by your Google Sheet, hosted for free on GitHub Pages.
 
 ---
 
