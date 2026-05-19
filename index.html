@@ -51,10 +51,13 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .send:hover:not(:disabled) { opacity: .85; }
 .notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .result-card { background: #f8fafc; border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
-.guide-card { background: #f0f9ff; border-left: 3px solid #0ea5e9; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 8px; }
-.guide-badge { font-size:.68rem; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:99px; font-weight:600; margin-left:6px; }
-.kb-badge { font-size:.68rem; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:99px; font-weight:600; margin-left:6px; }
-.source-divider { font-size:.72rem; color:#94a3b8; font-style:italic; margin:10px 0 6px; }
+.opt-btns { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.opt-btn { background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; border-radius:20px; padding:6px 16px; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .15s; font-family:inherit; }
+.opt-btn:hover { background:#dcfce7; border-color:#4ade80; }
+.policy-group { margin-bottom:14px; }
+.policy-group-title { font-weight:700; font-size:.82rem; color:#15803d; margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+.policy-item { font-size:.82rem; color:#1e293b; padding:4px 0 4px 14px; border-left:2px solid #d1fae5; margin-bottom:3px; line-height:1.5; }
+.policy-item .item-label { color:#64748b; font-size:.76rem; }
 </style>
 </head>
 <body>
@@ -91,7 +94,7 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
       <button class="send" id="sendBtn" onclick="sendMessage()" disabled>&#9658;</button>
     </div>
   </div>
-  <div class="notice">&#128218; Searches your <strong>Google Sheet KB</strong> &nbsp;+&nbsp; &#128640; <strong>Sprout Guide</strong> (guide.sprout.ph) &nbsp;&#183;&nbsp; Always up to date</div>
+  <div class="notice">No API needed &nbsp;&#183;&nbsp; Live data from your Google Sheet &nbsp;&#183;&nbsp; 100% free &nbsp;&#183;&nbsp; Always up to date</div>
 </div>
 
 <script>
@@ -190,7 +193,7 @@ function loadSheet() {
       setWelcome(
         'Hi there! &#128075; Welcome to the <strong>Solutions Services Knowledge Base</strong>! ' +
         'I\'m here to help you find answers about HR policies, payroll, and more.<br><br>' +
-        'I search your <strong>internal Knowledge Base</strong> &#128218; and the official <strong>Sprout Guide</strong> &#128640; — just type your question or choose a topic below!'
+        'Just type your question or choose a topic below to get started!'
       );
       document.getElementById('chatInput').disabled = false;
       document.getElementById('chatInput').placeholder = 'Type your question here...';
@@ -235,7 +238,7 @@ function parseHR(csv) {
     if (mod.length > 2 && rec.length > 2) {
       // Combine module + item as the requirement for better searching
       var req = item ? mod + ' — ' + item : mod;
-      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR' });
+      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR', module: mod, item: item });
     }
   }
   return result;
@@ -268,7 +271,7 @@ function parsePayroll(csv) {
     var item = (row[itemCol] || '').trim();
     var rec  = (row[recCol]  || '').trim();
     if (item.length > 2 && rec.length > 2) {
-      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll' });
+      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll', module: '', item: item });
     }
   }
   return result;
@@ -394,54 +397,79 @@ function smallTalk(q){
   return null;
 }
 
-// ── Sprout Guide search via Claude API + web_search ──────────────────────────
-function searchSproutGuide(query, callback) {
-  var prompt = 'Search guide.sprout.ph for articles relevant to this question: "' + query + '". ' +
-    'Return ONLY a JSON array (no markdown, no explanation) of up to 3 relevant articles found on guide.sprout.ph. ' +
-    'Each item must have: "title" (the article title) and "url" (the full guide.sprout.ph URL). ' +
-    'If no relevant articles exist on guide.sprout.ph, return an empty array [].';
+// ── Pending intent state ─────────────────────────────────────────────────────
+var pendingIntent = null; // e.g. { type: 'unsupported' } | { type: 'partial' } | { type: 'all_policies' }
 
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user', content: prompt }]
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    // Find text block from response
-    var text = (data.content || [])
-      .filter(function(b) { return b.type === 'text'; })
-      .map(function(b) { return b.text; })
-      .join('');
-    // Strip possible markdown fences
-    text = text.replace(/```json|```/g, '').trim();
-    // Extract JSON array
-    var match = text.match(/\[[\s\S]*\]/);
-    if (!match) { callback([]); return; }
-    try { callback(JSON.parse(match[0])); }
-    catch(e) { callback([]); }
-  })
-  .catch(function() { callback([]); });
+// Keywords that trigger the "list unsupported/partially supported" flow
+var unsupportedTriggers  = ['not supported','unsupported','not available','unavailable','cannot be done','cant be done','no support','not possible'];
+var partialTriggers      = ['partially supported','partial support','partially available','limited support','workaround'];
+var allPolicyTriggers    = ['all unsupported','all partially','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','partially supported policies'];
+
+function detectPolicyListIntent(q) {
+  var lower = q.toLowerCase();
+  var hasAll     = allPolicyTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
+  var hasPartial = partialTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
+  var hasUnsup   = unsupportedTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
+  if (hasAll || hasPartial || hasUnsup) return true;
+  return false;
 }
 
-function buildGuideResults(articles) {
-  if (!articles.length) return '';
-  var h = '<div class="source-divider">&#128640; From Sprout Guide (guide.sprout.ph):</div>';
-  articles.forEach(function(a) {
-    var safeTitle = esc(a.title || 'Sprout Guide Article');
-    var safeUrl   = (a.url || '').replace(/"/g, '');
-    h += '<div class="guide-card">' +
-         '<a href="' + safeUrl + '" target="_blank" style="color:#0369a1;font-weight:600;text-decoration:underline;">' +
-         safeTitle + '</a>' +
-         '<span class="guide-badge">Sprout Guide</span>' +
-         '</div>';
+function buildPolicyList(tab) {
+  var filtered = entries.filter(function(e) {
+    return tab === 'Both' || e.tab === tab;
   });
+
+  if (!filtered.length) {
+    return 'I didn\'t find any entries for <strong>' + tab + '</strong>. Try refreshing the data!';
+  }
+
+  // Group by module for HR; flat for Payroll
+  var groups = {};
+  filtered.forEach(function(e) {
+    var groupKey = (e.module && e.module.length) ? e.module : e.tab;
+    if (!groups[groupKey]) groups[groupKey] = { tab: e.tab, items: [] };
+    groups[groupKey].items.push(e);
+  });
+
+  var tabLabel = tab === 'Both' ? 'HR &amp; Payroll' : tab;
+  var h = 'Here are all the policies/items in <strong>' + tabLabel + '</strong>:<br><br>';
+
+  Object.keys(groups).sort().forEach(function(gk) {
+    var g = groups[gk];
+    var badge = '<span style="font-size:.68rem;background:' + (g.tab==='HR'?'#dcfce7':'#dbeafe') + ';color:' + (g.tab==='HR'?'#15803d':'#1d4ed8') + ';padding:1px 7px;border-radius:99px;font-weight:600;margin-left:5px;">' + g.tab + '</span>';
+    h += '<div class="policy-group">';
+    h += '<div class="policy-group-title">&#128193; ' + esc(gk) + badge + '</div>';
+    g.items.forEach(function(e) {
+      var displayName = e.item || e.requirement;
+      h += '<div class="policy-item">' + esc(displayName) + '</div>';
+    });
+    h += '</div>';
+  });
+
+  h += '<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>' + filtered.length + '</strong> items found.</div>';
   return h;
+}
+
+function showSourcePrompt() {
+  var html = 'Sure! Which data would you like to check?'
+    + '<div class="opt-btns">'
+    + '<button class="opt-btn" onclick="handleSourceChoice(\'HR\')">&#129333; HR</button>'
+    + '<button class="opt-btn" onclick="handleSourceChoice(\'Payroll\')">&#128181; Payroll</button>'
+    + '<button class="opt-btn" onclick="handleSourceChoice(\'Both\')">&#128203; Both</button>'
+    + '</div>';
+  addMsg('bot', html);
+}
+
+function handleSourceChoice(tab) {
+  pendingIntent = null;
+  addMsg('user', tab);
+  addTyping();
+  setTimeout(function() {
+    removeTyping();
+    var reply = buildPolicyList(tab);
+    var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+    addMsg('bot', reply + footer);
+  }, 500);
 }
 
 function sendMessage(){
@@ -452,44 +480,26 @@ function sendMessage(){
   addMsg('user',q);
   addTyping();
   document.getElementById('sendBtn').disabled=true;
-
   setTimeout(function(){
+    removeTyping();
     turnCount++;
     var st=smallTalk(q);
-    if(st){
-      removeTyping();
-      addMsg('bot',st);
+    if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
+
+    // Check for policy list intent BEFORE regular search
+    if(detectPolicyListIntent(q)){
+      pendingIntent = { type: 'policy_list' };
+      showSourcePrompt();
       document.getElementById('sendBtn').disabled=false;
       return;
     }
 
-    var kbResults=search(q);
-    lastResults=kbResults;
-
-    // Always also search the Sprout Guide
-    searchSproutGuide(q, function(guideArticles) {
-      removeTyping();
-
-      var footer='<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-
-      var reply = '';
-      if (kbResults.length) {
-        reply += '<div class="source-divider">&#128218; From Knowledge Base:</div>';
-        reply += buildReply(kbResults).replace(footer,'');
-      }
-      if (guideArticles.length) {
-        reply += buildGuideResults(guideArticles);
-      }
-      if (!kbResults.length && !guideArticles.length) {
-        reply = rand(notFound);
-      } else {
-        reply += footer;
-      }
-
-      if(kbResults.length>0&&turnCount%3===0) reply+='<br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
-      addMsg('bot',reply);
-      document.getElementById('sendBtn').disabled=false;
-    });
+    var results=search(q);
+    lastResults=results;
+    var reply=buildReply(results);
+    if(results.length>0&&turnCount%3===0) reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
+    addMsg('bot',reply);
+    document.getElementById('sendBtn').disabled=false;
   },600);
 }
 
