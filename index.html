@@ -330,70 +330,97 @@ function splitCSV(csv) {
   return rows;
 }
 
-function tokenize(t){ return t.toLowerCase().replace(/[^\w\s]/g,' ').split(/\s+/).filter(function(w){return w.length>1;}); }
+// Filler words stripped before searching so natural questions work
+var STOPWORDS = {
+  do:1,we:1,have:1,is:1,are:1,there:1,any:1,what:1,whats:1,
+  the:1,a:1,an:1,for:1,of:1,in:1,on:1,at:1,to:1,our:1,
+  can:1,could:1,how:1,why:1,when:1,who:1,which:1,where:1,
+  it:1,its:1,that:1,this:1,about:1,please:1,tell:1,me:1,
+  show:1,give:1,find:1,get:1,need:1,want:1,check:1,
+  also:1,just:1,really:1,actually:1,something:1,
+  ba:1,po:1,ako:1,yung:1,ang:1,ng:1,sa:1,na:1,may:1,
+  mag:1,ano:1,paano:1,pwede:1,pede:1,namin:1,natin:1
+};
 
-function expand(tokens){
-  var ex=tokens.slice(),joined=tokens.join(' ');
-  Object.keys(synonyms).forEach(function(k){
-    var v=synonyms[k];
-    if(v.some(function(s){return joined.indexOf(s)!==-1;})||tokens.some(function(t){return v.indexOf(t)!==-1;}))
-      ex=ex.concat(v);
+function tokenize(t) {
+  return t.toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter(function(w) { return w.length > 1 && !STOPWORDS[w]; });
+}
+
+// Keep the raw tokens (including stopwords) for phrase matching
+function tokenizeRaw(t) {
+  return t.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(function(w){ return w.length > 1; });
+}
+
+function expand(tokens) {
+  var ex = tokens.slice(), joined = tokens.join(' ');
+  Object.keys(synonyms).forEach(function(k) {
+    var v = synonyms[k];
+    if (v.some(function(s){ return joined.indexOf(s) !== -1; }) || tokens.some(function(t){ return v.indexOf(t) !== -1; }))
+      ex = ex.concat(v);
   });
   return ex;
 }
 
-function score(entry,tokens){
-  var req=entry.requirement.toLowerCase(),res=entry.resolution.toLowerCase(),notes=entry.notes.toLowerCase();
-  var s=0,phrase=tokens.join(' ');
-  if(req.indexOf(phrase)!==-1) s+=30;
-  tokens.forEach(function(t){
-    if(t.length<2)return;
-    if(req.indexOf(t)!==-1)s+=15;
-    if(res.indexOf(t)!==-1)s+=6;
-    if(notes.indexOf(t)!==-1)s+=4;
-    var stem=t.replace(/(ing|ed|tion|tions|s|ly)$/,'');
-    if(stem.length>3){if(req.indexOf(stem)!==-1)s+=8;if(res.indexOf(stem)!==-1)s+=3;}
-  });
-  return s;
-}
+function search(q) {
+  // Strip filler words to get the meaningful keywords
+  var keywords = tokenize(q);
+  if (!keywords.length) return [];
 
-function search(q){
-  var tokens = tokenize(q);
-  if (!tokens.length) return [];
+  // Also expand with synonyms
+  var expanded = expand(keywords);
 
   var scored = entries.map(function(e) {
     var req = e.requirement.toLowerCase();
-    var s   = 0;
+    var res = e.resolution.toLowerCase();
+    var s = 0;
 
-    // Highest priority: exact full phrase match in requirement
-    var phrase = tokens.join(' ');
-    if (req === phrase) s += 100;
-    else if (req.indexOf(phrase) !== -1) s += 60;
+    // Exact keyword phrase in requirement (highest signal)
+    var phrase = keywords.join(' ');
+    if (req === phrase) s += 120;
+    else if (req.indexOf(phrase) !== -1) s += 80;
 
-    // Each token must appear in the requirement to count
-    var allInReq = tokens.every(function(t) { return req.indexOf(t) !== -1; });
-    if (allInReq && tokens.length >= 2) s += 40;
-    else if (allInReq && tokens.length === 1) s += 20;
+    // All keywords present in requirement
+    var allInReq = keywords.every(function(t) { return req.indexOf(t) !== -1; });
+    if (allInReq && keywords.length >= 2) s += 60;
+    else if (allInReq && keywords.length === 1) s += 40;
 
-    // Partial: count how many tokens match in requirement
-    var matchCount = tokens.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
-    s += matchCount * 10;
+    // Count how many keywords match in requirement vs resolution
+    var reqHits = keywords.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
+    var resHits = keywords.filter(function(t) { return t.length > 2 && res.indexOf(t) !== -1; }).length;
+    s += reqHits * 15;
+    s += resHits * 5;
 
-    // Penalize if match ratio is low (matched few of many tokens)
-    var ratio = matchCount / tokens.length;
-    if (ratio < 0.5) s = Math.floor(s * 0.3);
+    // Synonym / expanded token hits
+    var synHits = expanded.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
+    s += synHits * 8;
+
+    // Stemming — strip common suffixes and try again
+    keywords.forEach(function(t) {
+      var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
+      if (stem.length > 3 && stem !== t) {
+        if (req.indexOf(stem) !== -1) s += 10;
+        if (res.indexOf(stem) !== -1) s += 4;
+      }
+    });
+
+    // Penalise when very few keywords matched (noisy query)
+    var matchRatio = reqHits / keywords.length;
+    if (keywords.length >= 3 && matchRatio < 0.4) s = Math.floor(s * 0.25);
 
     return { entry: e, score: s };
   })
-  .filter(function(s) { return s.score >= 30; })
+  .filter(function(x) { return x.score >= 20; })
   .sort(function(a, b) { return b.score - a.score; });
 
   if (!scored.length) return [];
 
-  // Only return top result if it is clearly better than second
-  if (scored.length > 1 && scored[0].score < scored[1].score * 1.5) {
-    // Too close — not confident enough
-    return [];
+  // Return the top result only if it's clearly ahead of the second
+  if (scored.length > 1 && scored[0].score < scored[1].score * 1.4) {
+    // Too close — show top 2 so the user can pick
+    return [scored[0].entry, scored[1].entry];
   }
 
   return [scored[0].entry];
