@@ -365,19 +365,19 @@ function expand(tokens) {
 }
 
 function search(q) {
-  // Strip filler words to get the meaningful keywords
   var keywords = tokenize(q);
   if (!keywords.length) return [];
 
-  // Also expand with synonyms
   var expanded = expand(keywords);
 
   var scored = entries.map(function(e) {
-    var req = e.requirement.toLowerCase();
-    var res = e.resolution.toLowerCase();
+    var req  = e.requirement.toLowerCase();
+    var res  = e.resolution.toLowerCase();
+    var mod  = (e.module  || '').toLowerCase();
+    var item = (e.item    || '').toLowerCase();
     var s = 0;
 
-    // Exact keyword phrase in requirement (highest signal)
+    // Exact keyword phrase anywhere in requirement
     var phrase = keywords.join(' ');
     if (req === phrase) s += 120;
     else if (req.indexOf(phrase) !== -1) s += 80;
@@ -387,39 +387,58 @@ function search(q) {
     if (allInReq && keywords.length >= 2) s += 60;
     else if (allInReq && keywords.length === 1) s += 40;
 
-    // Count how many keywords match in requirement vs resolution
-    var reqHits = keywords.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
-    var resHits = keywords.filter(function(t) { return t.length > 2 && res.indexOf(t) !== -1; }).length;
-    s += reqHits * 15;
-    s += resHits * 5;
-
-    // Synonym / expanded token hits
-    var synHits = expanded.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
-    s += synHits * 8;
-
-    // Stemming — strip common suffixes and try again
+    // Per-keyword scoring across all fields
     keywords.forEach(function(t) {
-      var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
-      if (stem.length > 3 && stem !== t) {
-        if (req.indexOf(stem) !== -1) s += 10;
-        if (res.indexOf(stem) !== -1) s += 4;
+      if (t.length < 2) return;
+      var hitItem = item.indexOf(t) !== -1;
+      var hitMod  = mod.indexOf(t)  !== -1;
+      var hitReq  = req.indexOf(t)  !== -1;
+      var hitRes  = res.indexOf(t)  !== -1;
+
+      if (hitItem) s += 20;
+      if (hitMod)  s += 12;
+      if (hitReq)  s += 15;
+      if (hitRes)  s += 5;
+
+      // Only try stemming if the full token didn't match anywhere meaningful
+      if (!hitItem && !hitMod && !hitReq) {
+        var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
+        if (stem.length > 3 && stem !== t) {
+          if (item.indexOf(stem) !== -1) s += 12;
+          if (mod.indexOf(stem)  !== -1) s += 7;
+          if (req.indexOf(stem)  !== -1) s += 10;
+          if (res.indexOf(stem)  !== -1) s += 4;
+        }
       }
     });
 
-    // Penalise when very few keywords matched (noisy query)
+    // Synonym / expanded token hits
+    expanded.forEach(function(t) {
+      if (t.length > 2) {
+        if (item.indexOf(t) !== -1) s += 10;
+        if (mod.indexOf(t)  !== -1) s += 6;
+        if (req.indexOf(t)  !== -1) s += 8;
+      }
+    });
+
+    // Bonus: keywords spread across both module AND item (e.g. "hourly" in item, "leave" in module)
+    var inMod  = keywords.filter(function(t) { return mod.indexOf(t)  !== -1; });
+    var inItem = keywords.filter(function(t) { return item.indexOf(t) !== -1; });
+    if (inMod.length > 0 && inItem.length > 0) s += 40;
+
+    // Penalise when very few keywords matched overall
+    var reqHits = keywords.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
     var matchRatio = reqHits / keywords.length;
     if (keywords.length >= 3 && matchRatio < 0.4) s = Math.floor(s * 0.25);
 
     return { entry: e, score: s };
   })
-  .filter(function(x) { return x.score >= 20; })
+  .filter(function(x) { return x.score >= 15; })
   .sort(function(a, b) { return b.score - a.score; });
 
   if (!scored.length) return [];
 
-  // Return the top result only if it's clearly ahead of the second
-  if (scored.length > 1 && scored[0].score < scored[1].score * 1.4) {
-    // Too close — show top 2 so the user can pick
+  if (scored.length > 1 && scored[0].score < scored[1].score * 1.2) {
     return [scored[0].entry, scored[1].entry];
   }
 
@@ -545,6 +564,50 @@ function sendMessage() {
   var q = input.value.trim();
   if (!q) return;
   input.value = '';
+
+  // Hidden debug command: "debug: <query>" — shows raw scores for all entries
+  if (q.toLowerCase().startsWith('debug:')) {
+    var dq = q.slice(6).trim();
+    addMsg('user', q);
+    var keywords = tokenize(dq);
+    var lines = ['<strong>DEBUG — keywords:</strong> [' + keywords.join(', ') + ']<br><br>'];
+    var allScored = entries.map(function(e) {
+      var req = e.requirement.toLowerCase(), res = e.resolution.toLowerCase();
+      var mod = (e.module||'').toLowerCase(), item = (e.item||'').toLowerCase();
+      var s = 0, phrase = keywords.join(' ');
+      if (req === phrase) s += 120; else if (req.indexOf(phrase) !== -1) s += 80;
+      var allInReq = keywords.every(function(t){ return req.indexOf(t) !== -1; });
+      if (allInReq && keywords.length >= 2) s += 60; else if (allInReq) s += 40;
+      keywords.forEach(function(t) {
+        if (item.indexOf(t) !== -1) s += 20;
+        if (mod.indexOf(t)  !== -1) s += 12;
+        if (req.indexOf(t)  !== -1) s += 15;
+        if (res.indexOf(t)  !== -1) s += 5;
+        if (item.indexOf(t) === -1 && mod.indexOf(t) === -1 && req.indexOf(t) === -1) {
+          var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
+          if (stem.length > 3 && stem !== t) {
+            if (item.indexOf(stem) !== -1) s += 12;
+            if (mod.indexOf(stem)  !== -1) s += 7;
+            if (req.indexOf(stem)  !== -1) s += 10;
+          }
+        }
+      });
+      var inMod = keywords.filter(function(t){ return mod.indexOf(t) !== -1; });
+      var inItem = keywords.filter(function(t){ return item.indexOf(t) !== -1; });
+      if (inMod.length > 0 && inItem.length > 0) s += 40;
+      return { req: e.requirement, mod: e.module, item: e.item, tab: e.tab, score: s };
+    }).filter(function(x){ return x.score > 0; }).sort(function(a,b){ return b.score - a.score; }).slice(0,10);
+    if (!allScored.length) {
+      lines.push('No entries scored above 0.');
+    } else {
+      allScored.forEach(function(x) {
+        lines.push('<span style="color:#15803d;font-weight:600;">[' + x.score + ']</span> '
+          + x.tab + ' | mod: <em>' + (x.mod||'—') + '</em> | item: <em>' + (x.item||'—') + '</em> | req: <em>' + x.req + '</em>');
+      });
+    }
+    addMsg('bot', lines.join('<br>'));
+    return;
+  }
   addMsg('user', q);
   addTyping();
   document.getElementById('sendBtn').disabled = true;
