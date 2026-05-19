@@ -99,7 +99,42 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 
 <script>
 var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
-var entries = [], lastResults = [], turnCount = 0;
+var entries = [], turnCount = 0;
+
+// ── Conversation context ──────────────────────────────────────────────────────
+// Tracks what the bot is "waiting for" and what topic was last discussed
+var ctx = {
+  pendingAction: null,   // 'chooseTab' — bot asked HR/Payroll/Both, waiting for answer
+  pendingPayload: null,  // data to act on once the pending question is answered
+  lastTopic: null,       // last search query, for follow-ups like "what about payroll?"
+  lastResults: [],       // last KB results shown
+  lastTab: null,         // last tab used in a policy list ('HR','Payroll','Both')
+};
+
+// Detect if user is choosing a tab (HR / Payroll / Both)
+// Returns 'HR', 'Payroll', 'Both', or null
+function detectTabChoice(q) {
+  var l = q.toLowerCase().trim();
+  // Direct button clicks come through as exact tab names
+  if (l === 'hr' || l === 'for hr' || l === 'hr only' || l === 'sa hr' || l === 'yung hr') return 'HR';
+  if (l === 'payroll' || l === 'for payroll' || l === 'payroll only' || l === 'sa payroll' || l === 'yung payroll') return 'Payroll';
+  if (l === 'both' || l === 'both hr and payroll' || l === 'for both' || l === 'lahat' || l === 'all') return 'Both';
+  // Fuzzy — message contains tab keyword
+  if (/\bhr\b/.test(l) && !/payroll/.test(l)) return 'HR';
+  if (/payroll/.test(l) && !/\bhr\b/.test(l)) return 'Payroll';
+  if ((/\bhr\b/.test(l) && /payroll/.test(l)) || /both/.test(l)) return 'Both';
+  return null;
+}
+
+// Detect follow-up tab swap: "what about payroll?" / "now for hr?" / "for payroll naman"
+function detectTabSwitch(q) {
+  var l = q.toLowerCase();
+  var switchPhrases = ['what about','how about','paano naman','for payroll','for hr','now payroll','now hr','payroll naman','hr naman','show payroll','show hr'];
+  var hasSwitchPhrase = switchPhrases.some(function(p){ return l.indexOf(p) !== -1; });
+  if (!hasSwitchPhrase) return null;
+  return detectTabChoice(q);
+}
+
 
 var synonyms = {
   leave:['leave','vacation','vl','sl','sick','absent','time off','day off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
@@ -383,124 +418,180 @@ function buildReply(results){
   return h+footer;
 }
 
-function smallTalk(q){
-  var lower=q.toLowerCase().trim();
-  if(greetings.some(function(g){return lower===g||lower.startsWith(g+' ')||lower.startsWith(g+'!');}))
-    return rand(['Hi there! How can I help you today? Ask me about company policies, payroll, IT issues, leaves, and more! &#128522;','Hello! I am your Solutions Knowledge Base assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our company policies or procedures! &#128077;']);
-  if(thanks.some(function(t){return lower.indexOf(t)!==-1;}))
-    return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;','Glad I could help! Feel free to ask more questions anytime. &#128522;']);
-  if(howAreYou.some(function(h){return lower.indexOf(h)!==-1;}))
-    return rand(['I am doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
-  var followUps=['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
-  if(lastResults.length>0&&followUps.some(function(f){return lower.indexOf(f)!==-1;}))
-    return 'Here is more detail on the top result:<br><br>'+formatEntry(lastResults[0]);
-  return null;
-}
 
-// ── Pending intent state ─────────────────────────────────────────────────────
-var pendingIntent = null; // e.g. { type: 'unsupported' } | { type: 'partial' } | { type: 'all_policies' }
-
-// Keywords that trigger the "list unsupported/partially supported" flow
-var unsupportedTriggers  = ['not supported','unsupported','not available','unavailable','cannot be done','cant be done','no support','not possible'];
-var partialTriggers      = ['partially supported','partial support','partially available','limited support','workaround'];
-var allPolicyTriggers    = ['all unsupported','all partially','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','partially supported policies'];
+// ── Policy list intent detection ─────────────────────────────────────────────
+var policyListTriggers = [
+  'unsupported','not supported','partially supported','partial support',
+  'all policies','list all','show all','what are all','what policies','which policies',
+  'unsupported policies','partial policies','all items','list items','show items',
+  'what items','what modules','all modules','list modules'
+];
 
 function detectPolicyListIntent(q) {
-  var lower = q.toLowerCase();
-  var hasAll     = allPolicyTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
-  var hasPartial = partialTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
-  var hasUnsup   = unsupportedTriggers.some(function(t){ return lower.indexOf(t) !== -1; });
-  if (hasAll || hasPartial || hasUnsup) return true;
-  return false;
+  var l = q.toLowerCase();
+  return policyListTriggers.some(function(t){ return l.indexOf(t) !== -1; });
 }
 
 function buildPolicyList(tab) {
   var filtered = entries.filter(function(e) {
     return tab === 'Both' || e.tab === tab;
   });
-
   if (!filtered.length) {
     return 'I didn\'t find any entries for <strong>' + tab + '</strong>. Try refreshing the data!';
   }
-
-  // Group by module for HR; flat for Payroll
   var groups = {};
   filtered.forEach(function(e) {
     var groupKey = (e.module && e.module.length) ? e.module : e.tab;
     if (!groups[groupKey]) groups[groupKey] = { tab: e.tab, items: [] };
     groups[groupKey].items.push(e);
   });
-
   var tabLabel = tab === 'Both' ? 'HR &amp; Payroll' : tab;
   var h = 'Here are all the policies/items in <strong>' + tabLabel + '</strong>:<br><br>';
-
   Object.keys(groups).sort().forEach(function(gk) {
     var g = groups[gk];
     var badge = '<span style="font-size:.68rem;background:' + (g.tab==='HR'?'#dcfce7':'#dbeafe') + ';color:' + (g.tab==='HR'?'#15803d':'#1d4ed8') + ';padding:1px 7px;border-radius:99px;font-weight:600;margin-left:5px;">' + g.tab + '</span>';
     h += '<div class="policy-group">';
     h += '<div class="policy-group-title">&#128193; ' + esc(gk) + badge + '</div>';
     g.items.forEach(function(e) {
-      var displayName = e.item || e.requirement;
-      h += '<div class="policy-item">' + esc(displayName) + '</div>';
+      h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
     });
     h += '</div>';
   });
-
   h += '<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>' + filtered.length + '</strong> items found.</div>';
   return h;
 }
 
-function showSourcePrompt() {
-  var html = 'Sure! Which data would you like to check?'
-    + '<div class="opt-btns">'
-    + '<button class="opt-btn" onclick="handleSourceChoice(\'HR\')">&#129333; HR</button>'
-    + '<button class="opt-btn" onclick="handleSourceChoice(\'Payroll\')">&#128181; Payroll</button>'
-    + '<button class="opt-btn" onclick="handleSourceChoice(\'Both\')">&#128203; Both</button>'
-    + '</div>';
-  addMsg('bot', html);
+function tabPrompt(message) {
+  return (message || 'Sure! Which data would you like to check?') +
+    '<div class="opt-btns">' +
+    '<button class="opt-btn" onclick="chooseTab(\'HR\')">&#129333; HR</button>' +
+    '<button class="opt-btn" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>' +
+    '<button class="opt-btn" onclick="chooseTab(\'Both\')">&#128203; Both</button>' +
+    '</div>';
 }
 
-function handleSourceChoice(tab) {
-  pendingIntent = null;
+// Called by the on-screen HR/Payroll/Both buttons
+function chooseTab(tab) {
   addMsg('user', tab);
+  respondToTab(tab);
+}
+
+function respondToTab(tab) {
+  ctx.lastTab = tab;
   addTyping();
   setTimeout(function() {
     removeTyping();
-    var reply = buildPolicyList(tab);
     var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+    var reply;
+    if (ctx.pendingAction === 'policyList') {
+      reply = buildPolicyList(tab);
+    } else if (ctx.pendingAction === 'search' && ctx.pendingPayload) {
+      // Re-run last search filtered to this tab
+      var filtered = ctx.pendingPayload.filter(function(e){ return tab === 'Both' || e.tab === tab; });
+      reply = buildReply(filtered.length ? filtered : []);
+    } else {
+      reply = buildPolicyList(tab);
+    }
+    ctx.pendingAction = null;
+    ctx.pendingPayload = null;
     addMsg('bot', reply + footer);
   }, 500);
 }
 
-function sendMessage(){
-  var input=document.getElementById('chatInput');
-  var q=input.value.trim();
-  if(!q)return;
-  input.value='';
-  addMsg('user',q);
+// ── Small talk ───────────────────────────────────────────────────────────────
+function smallTalk(q) {
+  var lower = q.toLowerCase().trim();
+  if (greetings.some(function(g){ return lower === g || lower.startsWith(g+' ') || lower.startsWith(g+'!'); }))
+    return rand(['Hi there! How can I help you today? Ask me about company policies, payroll, IT issues, leaves, and more! &#128522;','Hello! I am your Solutions Knowledge Base assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our company policies or procedures! &#128077;']);
+  if (thanks.some(function(t){ return lower.indexOf(t) !== -1; }))
+    return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;','Glad I could help! Feel free to ask more questions anytime. &#128522;']);
+  if (howAreYou.some(function(h){ return lower.indexOf(h) !== -1; }))
+    return rand(['I am doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
+  var followUps = ['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
+  if (ctx.lastResults.length > 0 && followUps.some(function(f){ return lower.indexOf(f) !== -1; }))
+    return 'Here is more detail on the top result:<br><br>' + formatEntry(ctx.lastResults[0]);
+  return null;
+}
+
+function sendMessage() {
+  var input = document.getElementById('chatInput');
+  var q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMsg('user', q);
   addTyping();
-  document.getElementById('sendBtn').disabled=true;
-  setTimeout(function(){
+  document.getElementById('sendBtn').disabled = true;
+
+  setTimeout(function() {
     removeTyping();
     turnCount++;
-    var st=smallTalk(q);
-    if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
 
-    // Check for policy list intent BEFORE regular search
-    if(detectPolicyListIntent(q)){
-      pendingIntent = { type: 'policy_list' };
-      showSourcePrompt();
-      document.getElementById('sendBtn').disabled=false;
+    // 1. Small talk check (greetings, thanks, etc.)
+    var st = smallTalk(q);
+    if (st) {
+      addMsg('bot', st);
+      document.getElementById('sendBtn').disabled = false;
       return;
     }
 
-    var results=search(q);
-    lastResults=results;
-    var reply=buildReply(results);
-    if(results.length>0&&turnCount%3===0) reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
-    addMsg('bot',reply);
-    document.getElementById('sendBtn').disabled=false;
-  },600);
+    // 2. Bot was waiting for a tab choice — check if this message answers it
+    if (ctx.pendingAction) {
+      var tab = detectTabChoice(q);
+      if (tab) {
+        respondToTab(tab);
+        document.getElementById('sendBtn').disabled = false;
+        return;
+      }
+      // User said something else — cancel pending and fall through
+      ctx.pendingAction = null;
+      ctx.pendingPayload = null;
+    }
+
+    // 3. Follow-up tab switch: "what about payroll?" after a previous answer
+    var switchTab = detectTabSwitch(q);
+    if (switchTab && (ctx.lastTab || ctx.lastResults.length)) {
+      ctx.pendingAction = ctx.lastResults.length ? 'search' : 'policyList';
+      ctx.pendingPayload = ctx.lastResults.length ? ctx.lastResults : null;
+      respondToTab(switchTab);
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    // 4. Policy list intent
+    if (detectPolicyListIntent(q)) {
+      ctx.pendingAction = 'policyList';
+      ctx.pendingPayload = null;
+      ctx.lastTopic = q;
+      addMsg('bot', tabPrompt('Sure! Would you like to see the items for:'));
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    // 5. Regular KB search
+    var results = search(q);
+    ctx.lastResults = results;
+    ctx.lastTopic = q;
+    ctx.lastTab = null;
+
+    // If we got results that span both tabs, ask which tab
+    var hasBoth = results.length > 0 &&
+      results.some(function(e){ return e.tab === 'HR'; }) &&
+      results.some(function(e){ return e.tab === 'Payroll'; });
+
+    if (hasBoth) {
+      ctx.pendingAction = 'search';
+      ctx.pendingPayload = results;
+      addMsg('bot', tabPrompt('I found results in both HR and Payroll. Which would you like to see?'));
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    var reply = buildReply(results);
+    if (results.length > 0 && turnCount % 3 === 0)
+      reply += '<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
+    addMsg('bot', reply);
+    document.getElementById('sendBtn').disabled = false;
+  }, 600);
 }
 
 function ask(chip){document.getElementById('chatInput').value=chip.textContent;sendMessage();}
