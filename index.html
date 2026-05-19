@@ -5,6 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Solutions Services Knowledge Base</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316a34a'/><text y='.9em' font-size='70' x='12'>🗂️</text></svg>"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ── Login overlay ── */
+#loginOverlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: linear-gradient(135deg, #0f2d1a, #14532d, #166534);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 24px; padding: 24px;
+}
+.login-card {
+  background: white; border-radius: 20px; padding: 36px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  width: 100%; max-width: 380px; text-align: center;
+}
+.login-logo { width: 60px; height: 60px; background: linear-gradient(135deg,#14532d,#16a34a); border-radius: 16px; display:flex; align-items:center; justify-content:center; font-size:28px; }
+.login-title { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+.login-sub { font-size: .82rem; color: #64748b; line-height: 1.5; }
+.login-divider { width: 100%; border: none; border-top: 1px solid #e2e8f0; margin: 4px 0; }
+#loginStatus { font-size: .76rem; color: #94a3b8; min-height: 18px; }
+/* User avatar in header */
+.user-info { display:flex; align-items:center; gap:8px; }
+.user-avatar { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,.4); object-fit:cover; }
+.user-name { font-size:.76rem; color:white; opacity:.9; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sign-out-btn { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.28); color:white; border-radius:7px; padding:4px 10px; font-size:.72rem; cursor:pointer; white-space:nowrap; }
+.sign-out-btn:hover { background:rgba(255,255,255,.25); }
+</style>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -61,6 +88,32 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </style>
 </head>
 <body>
+<!-- Google One Tap login overlay -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">&#128202;</div>
+    <div class="login-title">Solutions Services KB</div>
+    <div class="login-sub">Sign in with your Google account to access the knowledge base.</div>
+    <hr class="login-divider"/>
+    <!-- Google One Tap button rendered here -->
+    <div id="g_id_onload"
+      data-client_id="290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com"
+      data-callback="onGoogleSignIn"
+      data-auto_prompt="true">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-shape="rectangular"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-size="large"
+      data-logo_alignment="left"
+      data-width="300">
+    </div>
+    <div id="loginStatus">Waiting for sign-in...</div>
+  </div>
+</div>
+
 <div class="app">
   <header>
     <div class="hico">&#128202;</div>
@@ -69,6 +122,11 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
       <p>Ask anything about policies, procedures, and resolutions</p>
     </div>
     <div class="hbtns">
+      <div class="user-info" id="userInfo" style="display:none">
+        <img class="user-avatar" id="userAvatar" src="" alt=""/>
+        <span class="user-name" id="userName"></span>
+        <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+      </div>
       <button class="hbtn" onclick="loadSheet()">&#128260; Refresh</button>
     </div>
   </header>
@@ -98,6 +156,39 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </div>
 
 <script>
+var CLIENT_ID = '290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com';
+var currentUser = null;
+
+function onGoogleSignIn(response) {
+  // Decode the JWT credential to get user info
+  var parts = response.credential.split('.');
+  var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+  currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
+
+  // Hide overlay, show user in header
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('userAvatar').src = payload.picture;
+  document.getElementById('userName').textContent = payload.given_name || payload.name;
+  document.getElementById('userInfo').style.display = 'flex';
+
+  // Now load the sheet
+  loadSheet();
+}
+
+function signOut() {
+  currentUser = null;
+  if (window.google && google.accounts) {
+    google.accounts.id.disableAutoSelect();
+  }
+  // Show login overlay again
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('userInfo').style.display = 'none';
+  document.getElementById('loginStatus').textContent = 'Signed out. Please sign in again.';
+  // Reset chat
+  document.getElementById('chatInput').disabled = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('chips').style.display = 'none';
+}
 var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
 var entries = [], turnCount = 0;
 
@@ -700,7 +791,6 @@ function addTyping(){
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
 function removeTyping(){var el=document.getElementById('typing');if(el)el.remove();}
-loadSheet();
 </script>
 </body>
 </html>
