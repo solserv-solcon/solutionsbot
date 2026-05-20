@@ -820,19 +820,24 @@ function sendMessage() {
     // 3. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
     if (detectPolicyListIntent(q)) {
       ctx.lastTopic = q;
-      // If the query also mentions a specific tab, answer directly without prompting
       var inlineTab = detectTabChoice(q);
       if (inlineTab) {
+        // Tab specified in the same message — answer directly
         ctx.pendingAction = 'policyList';
         ctx.pendingPayload = null;
         ctx.lastTab = inlineTab;
-        respondToTab(inlineTab);
+        var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+        var reply = buildPolicyList(inlineTab);
+        ctx.pendingAction = null;
+        ctx.pendingPayload = null;
+        addMsg('bot', reply + footer);
+        document.getElementById('sendBtn').disabled = false;
       } else {
         ctx.pendingAction = 'policyList';
         ctx.pendingPayload = null;
         addMsg('bot', tabPrompt('Sure! Would you like to see the items for:'));
+        document.getElementById('sendBtn').disabled = false;
       }
-      document.getElementById('sendBtn').disabled = false;
       return;
     }
 
