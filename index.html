@@ -270,12 +270,16 @@ var notFound = [
 var pendingLog = null; // stores { question } while waiting for client name + remarks
 
 function showSubmitPrompt(question) {
-  pendingLog = { question: question };
+  pendingLog = { question: question, clientName: '', remarks: '' };
   var html =
     "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
     "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='logClientName' type='text' placeholder='Client name (optional)' style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;'/>" +
+    "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
+    "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
+    "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
     "<div class='opt-btns' style='margin-top:10px;'>" +
     "<button class='opt-btn' onclick='submitUnanswered()'>&#128229; Submit</button>" +
@@ -286,19 +290,19 @@ function showSubmitPrompt(question) {
 
 function submitUnanswered() {
   if (!pendingLog) return;
-  var clientName = (document.getElementById('logClientName') || {}).value || '';
-  var remarks    = (document.getElementById('logRemarks')    || {}).value || '';
+  var clientName = (pendingLog.clientName || '').trim();
+  var remarks    = (pendingLog.remarks    || '').trim();
 
-  // Disable the buttons immediately to prevent double submit
-  var btns = document.querySelectorAll('#logClientName, #logRemarks');
-  btns.forEach(function(el) { el.disabled = true; });
+  // Disable inputs and buttons immediately to prevent double submit
+  var els = document.querySelectorAll('#logClientName, #logRemarks');
+  els.forEach(function(el) { el.disabled = true; });
 
   var payload = {
     name:       currentUser ? currentUser.name  : 'Unknown',
     email:      currentUser ? currentUser.email : 'Unknown',
-    clientName: clientName.trim(),
+    clientName: clientName,
     question:   pendingLog.question,
-    remarks:    remarks.trim()
+    remarks:    remarks
   };
   pendingLog = null;
 
