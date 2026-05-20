@@ -190,6 +190,7 @@ function signOut() {
   document.getElementById('chips').style.display = 'none';
 }
 var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
+var LOGGER_URL = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
 var entries = [], turnCount = 0;
 
 // ── Conversation context ──────────────────────────────────────────────────────
@@ -260,10 +261,67 @@ var multiOpeners = [
   'Here are the most relevant results I found:',
 ];
 var notFound = [
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
+  "Hmm, I couldn't find an answer to that one!",
+  "I don't have that one in my knowledge base yet!",
+  "That one's not in my data yet!",
 ];
+
+// ── Unanswered question flow ──────────────────────────────────────────────────
+var pendingLog = null; // stores { question } while waiting for client name + remarks
+
+function showSubmitPrompt(question) {
+  pendingLog = { question: question };
+  var html =
+    "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
+    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
+    "<input id='logClientName' type='text' placeholder='Client name (optional)' style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;'/>" +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;'/>" +
+    "</div>" +
+    "<div class='opt-btns' style='margin-top:10px;'>" +
+    "<button class='opt-btn' onclick='submitUnanswered()'>&#128229; Submit</button>" +
+    "<button class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit()'>&#10005; No thanks</button>" +
+    "</div>";
+  addMsg('bot', html);
+}
+
+function submitUnanswered() {
+  if (!pendingLog) return;
+  var clientName = (document.getElementById('logClientName') || {}).value || '';
+  var remarks    = (document.getElementById('logRemarks')    || {}).value || '';
+
+  // Disable the buttons immediately to prevent double submit
+  var btns = document.querySelectorAll('#logClientName, #logRemarks');
+  btns.forEach(function(el) { el.disabled = true; });
+
+  var payload = {
+    name:       currentUser ? currentUser.name  : 'Unknown',
+    email:      currentUser ? currentUser.email : 'Unknown',
+    clientName: clientName.trim(),
+    question:   pendingLog.question,
+    remarks:    remarks.trim()
+  };
+  pendingLog = null;
+
+  fetch(LOGGER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    mode: 'no-cors'
+  }).then(function() {
+    addMsg('bot',
+      '&#10003; Got it! Your question has been logged and our team has been notified. ' +
+      "We'll get back to you at <strong>" + payload.email + "</strong> as soon as possible." +
+      '<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; Feel free to ask anything else!</div>'
+    );
+  }).catch(function() {
+    addMsg('bot', "&#9888; Something went wrong submitting your question. Please contact <strong>Solutions Services</strong> directly.");
+  });
+}
+
+function dismissSubmit() {
+  pendingLog = null;
+  addMsg('bot', "No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
+}
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -767,6 +825,12 @@ function sendMessage() {
       return;
     }
 
+    if (!results.length) {
+      showSubmitPrompt(q);
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
     var reply = buildReply(results);
     if (results.length > 0 && turnCount % 3 === 0)
       reply += '<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
@@ -774,7 +838,6 @@ function sendMessage() {
     document.getElementById('sendBtn').disabled = false;
   }, 600);
 }
-
 function ask(chip){document.getElementById('chatInput').value=chip.textContent;sendMessage();}
 function setSt(c,t){document.getElementById('sDot').className='dot '+c;document.getElementById('sTxt').textContent=t;}
 function setWelcome(h){var el=document.getElementById('welcomeBub');if(el)el.innerHTML=h;}
