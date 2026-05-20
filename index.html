@@ -817,22 +817,31 @@ function sendMessage() {
       ctx.pendingPayload = null;
     }
 
-    // 3. Follow-up tab switch: "what about payroll?" after a previous answer
+    // 3. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
+    if (detectPolicyListIntent(q)) {
+      ctx.lastTopic = q;
+      // If the query also mentions a specific tab, answer directly without prompting
+      var inlineTab = detectTabChoice(q);
+      if (inlineTab) {
+        ctx.pendingAction = 'policyList';
+        ctx.pendingPayload = null;
+        ctx.lastTab = inlineTab;
+        respondToTab(inlineTab);
+      } else {
+        ctx.pendingAction = 'policyList';
+        ctx.pendingPayload = null;
+        addMsg('bot', tabPrompt('Sure! Would you like to see the items for:'));
+      }
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    // 4. Follow-up tab switch: "what about payroll?" after a previous answer
     var switchTab = detectTabSwitch(q);
     if (switchTab && (ctx.lastTab || ctx.lastResults.length)) {
       ctx.pendingAction = ctx.lastResults.length ? 'search' : 'policyList';
       ctx.pendingPayload = ctx.lastResults.length ? ctx.lastResults : null;
       respondToTab(switchTab);
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    // 4. Policy list intent
-    if (detectPolicyListIntent(q)) {
-      ctx.pendingAction = 'policyList';
-      ctx.pendingPayload = null;
-      ctx.lastTopic = q;
-      addMsg('bot', tabPrompt('Sure! Would you like to see the items for:'));
       document.getElementById('sendBtn').disabled = false;
       return;
     }
