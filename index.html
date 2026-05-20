@@ -277,7 +277,7 @@ function showSubmitPrompt(question) {
     "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
     "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, details about the question...' " +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
     "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
@@ -638,25 +638,52 @@ function buildPolicyList(tab) {
   if (!filtered.length) {
     return 'I didn\'t find any entries for <strong>' + tab + '</strong>. Try refreshing the data!';
   }
-  var groups = {};
+
+  // Separate into HR and Payroll buckets
+  var buckets = { HR: {}, Payroll: {} };
   filtered.forEach(function(e) {
-    var groupKey = (e.module && e.module.length) ? e.module : e.tab;
-    if (!groups[groupKey]) groups[groupKey] = { tab: e.tab, items: [] };
-    groups[groupKey].items.push(e);
+    var groupKey = (e.module && e.module.length) ? e.module : (e.tab === 'HR' ? 'HR' : 'Payroll');
+    var bucket = e.tab === 'HR' ? buckets.HR : buckets.Payroll;
+    if (!bucket[groupKey]) bucket[groupKey] = [];
+    bucket[groupKey].push(e);
   });
+
   var tabLabel = tab === 'Both' ? 'HR &amp; Payroll' : tab;
   var h = 'Here are all the policies/items in <strong>' + tabLabel + '</strong>:<br><br>';
-  Object.keys(groups).sort().forEach(function(gk) {
-    var g = groups[gk];
-    var badge = '<span style="font-size:.68rem;background:' + (g.tab==='HR'?'#dcfce7':'#dbeafe') + ';color:' + (g.tab==='HR'?'#15803d':'#1d4ed8') + ';padding:1px 7px;border-radius:99px;font-weight:600;margin-left:5px;">' + g.tab + '</span>';
-    h += '<div class="policy-group">';
-    h += '<div class="policy-group-title">&#128193; ' + esc(gk) + badge + '</div>';
-    g.items.forEach(function(e) {
-      h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
+  var totalCount = 0;
+
+  // Render HR first, then Payroll
+  var tabOrder = tab === 'Payroll' ? ['Payroll'] : tab === 'HR' ? ['HR'] : ['HR', 'Payroll'];
+
+  tabOrder.forEach(function(t) {
+    var bucket = buckets[t];
+    var moduleKeys = Object.keys(bucket).sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+    if (!moduleKeys.length) return;
+
+    // Tab section header
+    var tabColor = t === 'HR' ? '#15803d' : '#1d4ed8';
+    var tabBg    = t === 'HR' ? '#dcfce7'  : '#dbeafe';
+    h += '<div style="font-size:.8rem;font-weight:700;color:' + tabColor + ';background:' + tabBg + ';padding:5px 12px;border-radius:7px;margin-bottom:8px;margin-top:4px;">'
+      + (t === 'HR' ? '&#129333; HR Policies' : '&#128181; Payroll Policies') + '</div>';
+
+    moduleKeys.forEach(function(gk) {
+      var items = bucket[gk];
+      // Sort items alphabetically
+      items.sort(function(a, b) {
+        return (a.item || a.requirement).toLowerCase().localeCompare((b.item || b.requirement).toLowerCase());
+      });
+      totalCount += items.length;
+
+      h += '<div class="policy-group">';
+      h += '<div class="policy-group-title">&#128193; ' + esc(gk) + '</div>';
+      items.forEach(function(e) {
+        h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
+      });
+      h += '</div>';
     });
-    h += '</div>';
   });
-  h += '<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>' + filtered.length + '</strong> items found.</div>';
+
+  h += '<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>' + totalCount + '</strong> items found.</div>';
   return h;
 }
 
