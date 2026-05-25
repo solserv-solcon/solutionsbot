@@ -5,33 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Solutions Services Knowledge Base</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316a34a'/><text y='.9em' font-size='70' x='12'>🗂️</text></svg>"/>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-/* ── Login overlay ── */
-#loginOverlay {
-  position: fixed; inset: 0; z-index: 999;
-  background: linear-gradient(135deg, #0f2d1a, #14532d, #166534);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 24px; padding: 24px;
-}
-.login-card {
-  background: white; border-radius: 20px; padding: 36px 32px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.35);
-  display: flex; flex-direction: column; align-items: center; gap: 18px;
-  width: 100%; max-width: 380px; text-align: center;
-}
-.login-logo { width: 60px; height: 60px; background: linear-gradient(135deg,#14532d,#16a34a); border-radius: 16px; display:flex; align-items:center; justify-content:center; font-size:28px; }
-.login-title { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
-.login-sub { font-size: .82rem; color: #64748b; line-height: 1.5; }
-.login-divider { width: 100%; border: none; border-top: 1px solid #e2e8f0; margin: 4px 0; }
-#loginStatus { font-size: .76rem; color: #94a3b8; min-height: 18px; }
-/* User avatar in header */
-.user-info { display:flex; align-items:center; gap:8px; }
-.user-avatar { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,.4); object-fit:cover; }
-.user-name { font-size:.76rem; color:white; opacity:.9; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.sign-out-btn { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.28); color:white; border-radius:7px; padding:4px 10px; font-size:.72rem; cursor:pointer; white-space:nowrap; }
-.sign-out-btn:hover { background:rgba(255,255,255,.25); }
-</style>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -78,39 +51,37 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .send:hover:not(:disabled) { opacity: .85; }
 .notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .result-card { background: #f8fafc; border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
-.opt-btns { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
-.opt-btn { background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; border-radius:20px; padding:6px 16px; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .15s; font-family:inherit; }
-.opt-btn:hover { background:#dcfce7; border-color:#4ade80; }
-.policy-group { margin-bottom:14px; }
-.policy-group-title { font-weight:700; font-size:.82rem; color:#15803d; margin-bottom:5px; display:flex; align-items:center; gap:6px; }
-.policy-item { font-size:.82rem; color:#1e293b; padding:6px 0 6px 14px; border-left:2px solid #d1fae5; margin-bottom:6px; line-height:1.5; }
-.policy-item .item-label { color:#64748b; font-size:.76rem; }
 </style>
 </head>
 <body>
-<!-- Google One Tap login overlay -->
-<div id="loginOverlay">
-  <div class="login-card">
-    <div class="login-logo">&#128202;</div>
-    <div class="login-title">Solutions Services KB</div>
-    <div class="login-sub">Sign in with your Google account to access the knowledge base.</div>
-    <hr class="login-divider"/>
-    <!-- Google One Tap button rendered here -->
-    <div id="g_id_onload"
-      data-client_id="290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com"
-      data-callback="onGoogleSignIn"
-      data-auto_prompt="true">
+
+<!-- Contact Us overlay + panel -->
+<div id="contactOverlay" onclick="closeContact()"></div>
+<div id="contactPanel">
+  <div class="cp-head">
+    <div>
+      <div style="color:white;font-weight:700;font-size:1rem;">&#9993; Contact Us</div>
+      <div style="color:rgba(255,255,255,.75);font-size:.74rem;margin-top:2px;">Send a message to Solutions Services</div>
     </div>
-    <div class="g_id_signin"
-      data-type="standard"
-      data-shape="rectangular"
-      data-theme="outline"
-      data-text="sign_in_with"
-      data-size="large"
-      data-logo_alignment="left"
-      data-width="300">
+    <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center;">&#10005;</button>
+  </div>
+  <div class="cp-body">
+    <div>
+      <label class="cp-label">Your Name</label>
+      <input id="cpName" type="text" readonly class="cp-input"/>
     </div>
-    <div id="loginStatus">Waiting for sign-in...</div>
+    <div>
+      <label class="cp-label">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
+      <input id="cpClient" type="text" placeholder="e.g. ABC Corporation" class="cp-input"/>
+    </div>
+    <div>
+      <label class="cp-label">Concern <span style="color:#dc2626;">*</span></label>
+      <textarea id="cpConcern" placeholder="Describe your concern in detail..." class="cp-textarea" oninput="updateCpBtn()"></textarea>
+    </div>
+    <div id="cpStatus"></div>
+  </div>
+  <div class="cp-foot">
+    <button id="cpSendBtn" onclick="sendContact()" disabled>&#9993; Send Message</button>
   </div>
 </div>
 
@@ -122,12 +93,8 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
       <p>Ask anything about policies, procedures, and resolutions</p>
     </div>
     <div class="hbtns">
-      <div class="user-info" id="userInfo" style="display:none">
-        <img class="user-avatar" id="userAvatar" src="" alt=""/>
-        <span class="user-name" id="userName"></span>
-        <button class="sign-out-btn" onclick="signOut()">Sign out</button>
-      </div>
       <button class="hbtn" onclick="loadSheet()">&#128260; Refresh</button>
+      <button class="hbtn" onclick="openContact()">&#9993; Contact Us</button>
     </div>
   </header>
   <div class="sbar">
@@ -156,143 +123,22 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </div>
 
 <script>
-var CLIENT_ID = '290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com';
-var currentUser = null;
-var STORAGE_KEY = 'solserv_kb_user';
-
-function applySignedInUser(user) {
-  currentUser = user;
-  document.getElementById('loginOverlay').style.display = 'none';
-  document.getElementById('userAvatar').src = user.picture;
-  document.getElementById('userName').textContent = user.givenName || user.name;
-  document.getElementById('userInfo').style.display = 'flex';
-  loadSheet();
-}
-
-function setCookie(name, value, hours) {
-  try { 
-    localStorage.setItem(name, value);
-    console.log('[KB] Saved to localStorage:', name, localStorage.getItem(name) ? 'OK' : 'FAILED');
-  } catch(e) { console.log('[KB] localStorage error:', e); }
-}
-
-function getCookie(name) {
-  try { var l = localStorage.getItem(name); if (l) return l; } catch(e) {}
-  return null;
-}
-
-function deleteCookie(name) {
-  try { localStorage.removeItem(name); } catch(e) {}
-}
-
-function onGoogleSignIn(response) {
-  var parts = response.credential.split('.');
-  var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-  var user = { name: payload.name, givenName: payload.given_name, email: payload.email, picture: payload.picture, expires: Date.now() + (8 * 60 * 60 * 1000) };
-  try { setCookie(STORAGE_KEY, JSON.stringify(user), 8); } catch(e) {}
-  applySignedInUser(user);
-}
-
-// Try restoring session on page load
-function restoreSession() {
-  try {
-    var saved = getCookie(STORAGE_KEY);
-    console.log('[KB] restoreSession — saved:', saved ? 'found' : 'null');
-    if (saved) {
-      var user = JSON.parse(saved);
-      if (user && user.email && user.expires && Date.now() < user.expires) {
-        console.log('[KB] Restoring session for:', user.email);
-        applySignedInUser(user);
-      } else {
-        console.log('[KB] Session expired or invalid, clearing');
-        deleteCookie(STORAGE_KEY);
-      }
-    }
-  } catch(e) { console.log('[KB] restoreSession error:', e); }
-}
-
-// Run after DOM is fully ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', restoreSession);
-} else {
-  restoreSession();
-}
-
-function signOut() {
-  currentUser = null;
-  try { deleteCookie(STORAGE_KEY); } catch(e) {}
-  if (window.google && google.accounts) {
-    google.accounts.id.disableAutoSelect();
-  }
-  document.getElementById('loginOverlay').style.display = 'flex';
-  document.getElementById('userInfo').style.display = 'none';
-  document.getElementById('loginStatus').textContent = 'Signed out. Please sign in again.';
-  document.getElementById('chatInput').disabled = true;
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('chips').style.display = 'none';
-}
 var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
-var LOGGER_URL = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
-var entries = [], turnCount = 0;
-
-// ── Conversation context ──────────────────────────────────────────────────────
-// Tracks what the bot is "waiting for" and what topic was last discussed
-var ctx = {
-  pendingAction: null,
-  pendingPayload: null,
-  lastTopic: null,
-  lastResults: [],
-  lastTab: null,
-  showRecommendations: false,
-};
-
-// Detect if user is choosing a tab (HR / Payroll / Both)
-// Returns 'HR', 'Payroll', 'Both', or null
-function detectTabChoice(q) {
-  var l = q.toLowerCase().trim();
-  // Direct button clicks come through as exact tab names
-  if (l === 'hr' || l === 'for hr' || l === 'hr only' || l === 'sa hr' || l === 'yung hr') return 'HR';
-  if (l === 'payroll' || l === 'for payroll' || l === 'payroll only' || l === 'sa payroll' || l === 'yung payroll') return 'Payroll';
-  if (l === 'both' || l === 'both hr and payroll' || l === 'for both' || l === 'lahat' || l === 'all') return 'Both';
-  // Fuzzy — message contains tab keyword
-  if (/\bhr\b/.test(l) && !/payroll/.test(l)) return 'HR';
-  if (/payroll/.test(l) && !/\bhr\b/.test(l)) return 'Payroll';
-  if ((/\bhr\b/.test(l) && /payroll/.test(l)) || /both/.test(l)) return 'Both';
-  return null;
-}
-
-// Detect follow-up tab swap: "what about payroll?" / "now for hr?" / "for payroll naman"
-function detectTabSwitch(q) {
-  var l = q.toLowerCase();
-  var switchPhrases = ['what about','how about','paano naman','for payroll','for hr','now payroll','now hr','payroll naman','hr naman','show payroll','show hr'];
-  var hasSwitchPhrase = switchPhrases.some(function(p){ return l.indexOf(p) !== -1; });
-  if (!hasSwitchPhrase) return null;
-  return detectTabChoice(q);
-}
-
+var entries = [], lastResults = [], turnCount = 0;
 
 var synonyms = {
-  leave:        ['leave','vacation','vl','sl','sick','absent','time off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
-  halfday:      ['half day','half-day','0.5 day','half a day','4 hours leave','4hr leave','4 hour leave'],
-  hourlyleave:  ['hourly leave','hourly','per hour leave','1 hour leave','2 hour leave','3 hour leave','by the hour','fractional leave'],
-  password:     ['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
-  payroll:      ['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
-  wfh:          ['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
+  leave:['leave','vacation','vl','sl','sick','absent','time off','day off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
+  password:['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
+  payroll:['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
+  wfh:['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
   reimbursement:['reimbursement','reimburse','expense','receipt','claim','expense report'],
-  refund:       ['refund','money back','return payment','cancel subscription','get my money'],
-  it:           ['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
-  escalation:   ['escalate','escalation','unresolved','complaint','not resolved','follow up'],
-  privacy:      ['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
-  thirteenth:   ['13th month','thirteenth month','christmas bonus','bonus','13th'],
-  balance:      ['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
-  leavetypes:   ['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves'],
-  nightdiff:    ['night diff','nd','night differential','night shift differential','graveyard','late shift'],
-  overtime:     ['ot','overtime','extra hours','work beyond','beyond regular hours'],
-  graceperiod:  ['grace period','grace','late','tardiness','tardy','lateness'],
-  costcenter:   ['cost center','cost centre','department cost','budget center'],
-  audittrail:   ['audit trail','audit log','activity log','change log','history log','who changed','track changes'],
-  brokenshift:  ['broken shift','split shift','split schedule','divided shift'],
-  subdept:      ['sub department','sub-department','child department','department under'],
+  refund:['refund','money back','return payment','cancel subscription','get my money'],
+  it:['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
+  escalation:['escalate','escalation','unresolved','complaint','not resolved','follow up'],
+  privacy:['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
+  thirteenth:['13th month','thirteenth month','christmas bonus','bonus','13th'],
+  balance:['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
+  leavetypes:['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves']
 };
 
 var greetings  = ['hi','hello','hey','good morning','good afternoon','good evening','sup','yo','kumusta','kamusta','hi there','hello there'];
@@ -313,102 +159,10 @@ var multiOpeners = [
   'Here are the most relevant results I found:',
 ];
 var notFound = [
-  "Hmm, I couldn't find an answer to that one!",
-  "I don't have that one in my knowledge base yet!",
-  "That one's not in my data yet!",
+  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
+  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
+  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
 ];
-
-// ── Unanswered question flow ──────────────────────────────────────────────────
-var pendingLog = null; // stores { question } while waiting for client name + remarks
-
-function showSubmitPrompt(question) {
-  pendingLog = { question: question, clientName: '', remarks: '' };
-  var uid = 'prompt_' + Date.now();
-  var html =
-    "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
-    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
-    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
-    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "</div>" +
-    "<div class='opt-btns' style='margin-top:10px;'>" +
-    "<button id='" + uid + "_submit' class='opt-btn' onclick='submitUnanswered()' disabled " +
-    "style='opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
-    "<button id='" + uid + "_dismiss' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
-    "</div>";
-  pendingLog._uid = uid;
-  addMsg('bot', html);
-}
-
-function updateSubmitBtn(uid) {
-  var btn = document.getElementById(uid + '_submit');
-  if (!btn) return;
-  var hasInput = (pendingLog.clientName || '').trim().length > 0 || (pendingLog.remarks || '').trim().length > 0;
-  btn.disabled       = !hasInput;
-  btn.style.opacity  = hasInput ? '1'          : '0.4';
-  btn.style.cursor   = hasInput ? 'pointer'    : 'not-allowed';
-}
-
-function disableSubmitButtons() {
-  if (!pendingLog || !pendingLog._uid) return;
-  var uid = pendingLog._uid;
-  var submitBtn  = document.getElementById(uid + '_submit');
-  var dismissBtn = document.getElementById(uid + '_dismiss');
-  var clientEl   = document.getElementById(uid + '_client');
-  var remarksEl  = document.getElementById(uid + '_remarks');
-  if (clientEl)  clientEl.disabled  = true;
-  if (remarksEl) remarksEl.disabled = true;
-  if (submitBtn)  { submitBtn.disabled  = true; submitBtn.style.opacity  = '0.4'; submitBtn.style.cursor  = 'not-allowed'; }
-  if (dismissBtn) { dismissBtn.disabled = true; dismissBtn.style.opacity = '0.4'; dismissBtn.style.cursor = 'not-allowed'; }
-}
-
-function dismissSubmit(uid) {
-  disableSubmitButtons();
-  pendingLog = null;
-  addMsg('bot', "No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
-}
-
-function submitUnanswered() {
-  if (!pendingLog) return;
-  var clientName = (pendingLog.clientName || '').trim();
-  var remarks    = (pendingLog.remarks    || '').trim();
-  if (!clientName && !remarks) return;
-
-  disableSubmitButtons();
-
-  var payload = {
-    name:       currentUser ? currentUser.name  : 'Unknown',
-    email:      currentUser ? currentUser.email : 'Unknown',
-    clientName: clientName,
-    question:   pendingLog.question,
-    remarks:    remarks
-  };
-  pendingLog = null;
-
-  fetch(LOGGER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    mode: 'no-cors'
-  }).then(function() {
-    addMsg('bot',
-      '&#10003; Got it! Your question has been logged and our team has been notified. ' +
-      "We'll get back to you at <strong>" + payload.email + "</strong> as soon as possible." +
-      '<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; Feel free to ask anything else!</div>'
-    );
-  }).catch(function() {
-    addMsg('bot', "&#9888; Something went wrong submitting your question. Please contact <strong>Solutions Services</strong> directly.");
-  });
-}
-
-function dismissSubmit() {
-  pendingLog = null;
-  disableSubmitButtons();
-  addMsg('bot', "No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
-}
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -509,7 +263,7 @@ function parseHR(csv) {
     if (mod.length > 2 && rec.length > 2) {
       // Combine module + item as the requirement for better searching
       var req = item ? mod + ' — ' + item : mod;
-      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR', module: mod, item: item });
+      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR' });
     }
   }
   return result;
@@ -542,7 +296,7 @@ function parsePayroll(csv) {
     var item = (row[itemCol] || '').trim();
     var rec  = (row[recCol]  || '').trim();
     if (item.length > 2 && rec.length > 2) {
-      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll', module: '', item: item });
+      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll' });
     }
   }
   return result;
@@ -566,123 +320,70 @@ function splitCSV(csv) {
   return rows;
 }
 
-// Filler words stripped before searching so natural questions work
-var STOPWORDS = {
-  do:1,we:1,have:1,is:1,are:1,there:1,any:1,what:1,whats:1,
-  the:1,a:1,an:1,for:1,of:1,in:1,on:1,at:1,to:1,our:1,
-  can:1,could:1,how:1,why:1,when:1,who:1,which:1,where:1,
-  it:1,its:1,that:1,this:1,about:1,please:1,tell:1,me:1,
-  show:1,give:1,find:1,get:1,need:1,want:1,check:1,
-  also:1,just:1,really:1,actually:1,something:1,
-  ba:1,po:1,ako:1,yung:1,ang:1,ng:1,sa:1,na:1,may:1,
-  mag:1,ano:1,paano:1,pwede:1,pede:1,namin:1,natin:1
-};
+function tokenize(t){ return t.toLowerCase().replace(/[^\w\s]/g,' ').split(/\s+/).filter(function(w){return w.length>1;}); }
 
-function tokenize(t) {
-  return t.toLowerCase()
-    .replace(/[^\w\s]/g, ' ')
-    .split(/\s+/)
-    .filter(function(w) { return w.length > 1 && !STOPWORDS[w]; });
-}
-
-// Keep the raw tokens (including stopwords) for phrase matching
-function tokenizeRaw(t) {
-  return t.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(function(w){ return w.length > 1; });
-}
-
-function expand(tokens) {
-  var ex = tokens.slice(), joined = tokens.join(' ');
-  Object.keys(synonyms).forEach(function(k) {
-    var v = synonyms[k];
-    if (v.some(function(s){ return joined.indexOf(s) !== -1; }) || tokens.some(function(t){ return v.indexOf(t) !== -1; }))
-      ex = ex.concat(v);
+function expand(tokens){
+  var ex=tokens.slice(),joined=tokens.join(' ');
+  Object.keys(synonyms).forEach(function(k){
+    var v=synonyms[k];
+    if(v.some(function(s){return joined.indexOf(s)!==-1;})||tokens.some(function(t){return v.indexOf(t)!==-1;}))
+      ex=ex.concat(v);
   });
   return ex;
 }
 
-function search(q) {
-  var keywords = tokenize(q);
-  if (!keywords.length) return [];
+function score(entry,tokens){
+  var req=entry.requirement.toLowerCase(),res=entry.resolution.toLowerCase(),notes=entry.notes.toLowerCase();
+  var s=0,phrase=tokens.join(' ');
+  if(req.indexOf(phrase)!==-1) s+=30;
+  tokens.forEach(function(t){
+    if(t.length<2)return;
+    if(req.indexOf(t)!==-1)s+=15;
+    if(res.indexOf(t)!==-1)s+=6;
+    if(notes.indexOf(t)!==-1)s+=4;
+    var stem=t.replace(/(ing|ed|tion|tions|s|ly)$/,'');
+    if(stem.length>3){if(req.indexOf(stem)!==-1)s+=8;if(res.indexOf(stem)!==-1)s+=3;}
+  });
+  return s;
+}
 
-  var expanded = expand(keywords);
+function search(q){
+  var tokens = tokenize(q);
+  if (!tokens.length) return [];
 
   var scored = entries.map(function(e) {
-    var req  = e.requirement.toLowerCase();
-    var res  = e.resolution.toLowerCase();
-    var mod  = (e.module  || '').toLowerCase();
-    var item = (e.item    || '').toLowerCase();
-    var s = 0;
+    var req = e.requirement.toLowerCase();
+    var s   = 0;
 
-    // Exact keyword phrase anywhere in requirement
-    var phrase = keywords.join(' ');
-    if (req === phrase) s += 120;
-    else if (req.indexOf(phrase) !== -1) s += 80;
+    // Highest priority: exact full phrase match in requirement
+    var phrase = tokens.join(' ');
+    if (req === phrase) s += 100;
+    else if (req.indexOf(phrase) !== -1) s += 60;
 
-    // All keywords present in requirement
-    var allInReq = keywords.every(function(t) { return req.indexOf(t) !== -1; });
-    if (allInReq && keywords.length >= 2) s += 60;
-    else if (allInReq && keywords.length === 1) s += 40;
+    // Each token must appear in the requirement to count
+    var allInReq = tokens.every(function(t) { return req.indexOf(t) !== -1; });
+    if (allInReq && tokens.length >= 2) s += 40;
+    else if (allInReq && tokens.length === 1) s += 20;
 
-    // Per-keyword scoring across all fields
-    keywords.forEach(function(t) {
-      if (t.length < 2) return;
+    // Partial: count how many tokens match in requirement
+    var matchCount = tokens.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
+    s += matchCount * 10;
 
-      // For short tokens (<=3 chars) use whole-word matching to avoid
-      // substring false positives e.g. "hi" matching inside "shift"
-      var matchFn = t.length <= 3
-        ? function(field) { return new RegExp('\\b' + t + '\\b').test(field); }
-        : function(field) { return field.indexOf(t) !== -1; };
-
-      var hitItem = matchFn(item);
-      var hitMod  = matchFn(mod);
-      var hitReq  = matchFn(req);
-      var hitRes  = matchFn(res);
-
-      if (hitItem) s += 20;
-      if (hitMod)  s += 12;
-      if (hitReq)  s += 15;
-      if (hitRes)  s += 5;
-
-      // Only try stemming if the full token didn't match anywhere meaningful
-      if (!hitItem && !hitMod && !hitReq) {
-        var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
-        if (stem.length > 3 && stem !== t) {
-          if (item.indexOf(stem) !== -1) s += 12;
-          if (mod.indexOf(stem)  !== -1) s += 7;
-          if (req.indexOf(stem)  !== -1) s += 10;
-          if (res.indexOf(stem)  !== -1) s += 4;
-        }
-      }
-    });
-
-    // Synonym / expanded token hits
-    expanded.forEach(function(t) {
-      if (t.length > 2) {
-        if (item.indexOf(t) !== -1) s += 10;
-        if (mod.indexOf(t)  !== -1) s += 6;
-        if (req.indexOf(t)  !== -1) s += 8;
-      }
-    });
-
-    // Bonus: keywords spread across both module AND item (e.g. "hourly" in item, "leave" in module)
-    var inMod  = keywords.filter(function(t) { return mod.indexOf(t)  !== -1; });
-    var inItem = keywords.filter(function(t) { return item.indexOf(t) !== -1; });
-    if (inMod.length > 0 && inItem.length > 0) s += 40;
-
-    // Penalise when very few keywords matched overall
-    var reqHits = keywords.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
-    var matchRatio = reqHits / keywords.length;
-    if (keywords.length >= 3 && matchRatio < 0.4) s = Math.floor(s * 0.25);
+    // Penalize if match ratio is low (matched few of many tokens)
+    var ratio = matchCount / tokens.length;
+    if (ratio < 0.5) s = Math.floor(s * 0.3);
 
     return { entry: e, score: s };
   })
-  .filter(function(x) { return x.score >= 15; })
+  .filter(function(s) { return s.score >= 30; })
   .sort(function(a, b) { return b.score - a.score; });
 
   if (!scored.length) return [];
 
-  if (scored.length > 1 && scored[0].score < scored[1].score * 1.2) {
-    return [scored[0].entry, scored[1].entry];
+  // Only return top result if it is clearly better than second
+  if (scored.length > 1 && scored[0].score < scored[1].score * 1.5) {
+    // Too close — not confident enough
+    return [];
   }
 
   return [scored[0].entry];
@@ -707,300 +408,118 @@ function buildReply(results){
   return h+footer;
 }
 
-
-// ── Policy list intent detection ─────────────────────────────────────────────
-var policyListTriggers = [
-  'unsupported','not supported','partially supported','partial support',
-  'all policies','list all','show all','what are all','what policies','which policies',
-  'unsupported policies','partial policies','all items','list items','show items',
-  'what items','what modules','all modules','list modules'
-];
-
-var recommendationTriggers = [
-  'recommendation','recommendations','recommended','with recommendation',
-  'include recommendation','show recommendation','and recommendation',
-  'with details','include details','show details','with resolution',
-  'include resolution','show resolution','and resolution'
-];
-
-function detectPolicyListIntent(q) {
-  var l = q.toLowerCase();
-  return policyListTriggers.some(function(t){ return l.indexOf(t) !== -1; });
-}
-
-function detectRecommendationIntent(q) {
-  var l = q.toLowerCase();
-  return recommendationTriggers.some(function(t){ return l.indexOf(t) !== -1; });
-}
-
-function buildPolicyList(tab, showRecommendations) {
-  var filtered = entries.filter(function(e) {
-    return tab === 'Both' || e.tab === tab;
-  });
-  if (!filtered.length) {
-    return 'I didn\'t find any entries for <strong>' + tab + '</strong>. Try refreshing the data!';
-  }
-
-  // Separate into HR and Payroll buckets
-  var buckets = { HR: {}, Payroll: {} };
-  filtered.forEach(function(e) {
-    var groupKey = (e.module && e.module.length) ? e.module : (e.tab === 'HR' ? 'HR' : 'Payroll');
-    var bucket = e.tab === 'HR' ? buckets.HR : buckets.Payroll;
-    if (!bucket[groupKey]) bucket[groupKey] = [];
-    bucket[groupKey].push(e);
-  });
-
-  var tabLabel = tab === 'Both' ? 'HR &amp; Payroll' : tab;
-  var h = 'Here are all the policies/items in <strong>' + tabLabel + '</strong>:<br><br>';
-  var totalCount = 0;
-
-  // Render HR first, then Payroll
-  var tabOrder = tab === 'Payroll' ? ['Payroll'] : tab === 'HR' ? ['HR'] : ['HR', 'Payroll'];
-
-  tabOrder.forEach(function(t) {
-    var bucket = buckets[t];
-    var moduleKeys = Object.keys(bucket).sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
-    if (!moduleKeys.length) return;
-
-    // Tab section header
-    var tabColor = t === 'HR' ? '#15803d' : '#1d4ed8';
-    var tabBg    = t === 'HR' ? '#dcfce7'  : '#dbeafe';
-    h += '<div style="font-size:.8rem;font-weight:700;color:' + tabColor + ';background:' + tabBg + ';padding:5px 12px;border-radius:7px;margin-bottom:8px;margin-top:4px;">'
-      + (t === 'HR' ? '&#129333; HR Policies' : '&#128181; Payroll Policies') + '</div>';
-
-    moduleKeys.forEach(function(gk) {
-      var items = bucket[gk];
-      // Sort items alphabetically
-      items.sort(function(a, b) {
-        return (a.item || a.requirement).toLowerCase().localeCompare((b.item || b.requirement).toLowerCase());
-      });
-      totalCount += items.length;
-
-      h += '<div class="policy-group">';
-      h += '<div class="policy-group-title">&#128193; ' + esc(gk) + '</div>';
-      items.forEach(function(e) {
-        if (showRecommendations) {
-          h += '<div class="policy-item">'
-            + '<div style="font-weight:600;color:#1e293b;">' + esc(e.item || e.requirement) + '</div>'
-            + '<div style="font-size:.78rem;color:#475569;margin-top:3px;line-height:1.5;">' + esc(e.resolution) + '</div>'
-            + '</div>';
-        } else {
-          h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
-        }
-      });
-      h += '</div>';
-    });
-  });
-
-  h += '<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>' + totalCount + '</strong> items found.</div>';
-  return h;
-}
-
-function tabPrompt(message) {
-  return (message || 'Sure! Which data would you like to check?') +
-    '<div class="opt-btns">' +
-    '<button class="opt-btn" onclick="chooseTab(\'HR\')">&#129333; HR</button>' +
-    '<button class="opt-btn" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>' +
-    '<button class="opt-btn" onclick="chooseTab(\'Both\')">&#128203; Both</button>' +
-    '</div>';
-}
-
-// Called by the on-screen HR/Payroll/Both buttons
-function chooseTab(tab) {
-  addMsg('user', tab);
-  respondToTab(tab);
-}
-
-function respondToTab(tab) {
-  ctx.lastTab = tab;
-  addTyping();
-  setTimeout(function() {
-    removeTyping();
-    var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-    var reply;
-    if (ctx.pendingAction === 'policyList') {
-      reply = buildPolicyList(tab, ctx.showRecommendations);
-    } else if (ctx.pendingAction === 'search' && ctx.pendingPayload) {
-      // Re-run last search filtered to this tab
-      var filtered = ctx.pendingPayload.filter(function(e){ return tab === 'Both' || e.tab === tab; });
-      reply = buildReply(filtered.length ? filtered : []);
-    } else {
-      reply = buildPolicyList(tab);
-    }
-    ctx.pendingAction = null;
-    ctx.pendingPayload = null;
-    addMsg('bot', reply + footer);
-  }, 500);
-}
-
-// ── Small talk ───────────────────────────────────────────────────────────────
-function smallTalk(q) {
-  var lower = q.toLowerCase().trim();
-  if (greetings.some(function(g){ return lower === g || lower.startsWith(g+' ') || lower.startsWith(g+'!'); }))
+function smallTalk(q){
+  var lower=q.toLowerCase().trim();
+  if(greetings.some(function(g){return lower===g||lower.startsWith(g+' ')||lower.startsWith(g+'!');}))
     return rand(['Hi there! How can I help you today? Ask me about company policies, payroll, IT issues, leaves, and more! &#128522;','Hello! I am your Solutions Knowledge Base assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our company policies or procedures! &#128077;']);
-  if (thanks.some(function(t){ return lower.indexOf(t) !== -1; }))
+  if(thanks.some(function(t){return lower.indexOf(t)!==-1;}))
     return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;','Glad I could help! Feel free to ask more questions anytime. &#128522;']);
-  if (howAreYou.some(function(h){ return lower.indexOf(h) !== -1; }))
+  if(howAreYou.some(function(h){return lower.indexOf(h)!==-1;}))
     return rand(['I am doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
-  var followUps = ['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
-  if (ctx.lastResults.length > 0 && followUps.some(function(f){ return lower.indexOf(f) !== -1; }))
-    return 'Here is more detail on the top result:<br><br>' + formatEntry(ctx.lastResults[0]);
+  var followUps=['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
+  if(lastResults.length>0&&followUps.some(function(f){return lower.indexOf(f)!==-1;}))
+    return 'Here is more detail on the top result:<br><br>'+formatEntry(lastResults[0]);
   return null;
 }
 
-function sendMessage() {
-  var input = document.getElementById('chatInput');
-  var q = input.value.trim();
-  if (!q) return;
-  input.value = '';
+var LOGGER_URL    = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
+var CONTACT_EMAIL = 'abmanalastas@sprout.ph';
 
-  // Hidden debug command: "debug: <query>" — shows raw scores for all entries
-  if (q.toLowerCase().startsWith('debug:')) {
-    var dq = q.slice(6).trim();
-    addMsg('user', q);
-    var keywords = tokenize(dq);
-    var lines = ['<strong>DEBUG — keywords:</strong> [' + keywords.join(', ') + ']<br><br>'];
-    var allScored = entries.map(function(e) {
-      var req = e.requirement.toLowerCase(), res = e.resolution.toLowerCase();
-      var mod = (e.module||'').toLowerCase(), item = (e.item||'').toLowerCase();
-      var s = 0, phrase = keywords.join(' ');
-      if (req === phrase) s += 120; else if (req.indexOf(phrase) !== -1) s += 80;
-      var allInReq = keywords.every(function(t){ return req.indexOf(t) !== -1; });
-      if (allInReq && keywords.length >= 2) s += 60; else if (allInReq) s += 40;
-      keywords.forEach(function(t) {
-        if (item.indexOf(t) !== -1) s += 20;
-        if (mod.indexOf(t)  !== -1) s += 12;
-        if (req.indexOf(t)  !== -1) s += 15;
-        if (res.indexOf(t)  !== -1) s += 5;
-        if (item.indexOf(t) === -1 && mod.indexOf(t) === -1 && req.indexOf(t) === -1) {
-          var stem = t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/, '');
-          if (stem.length > 3 && stem !== t) {
-            if (item.indexOf(stem) !== -1) s += 12;
-            if (mod.indexOf(stem)  !== -1) s += 7;
-            if (req.indexOf(stem)  !== -1) s += 10;
-          }
-        }
-      });
-      var inMod = keywords.filter(function(t){ return mod.indexOf(t) !== -1; });
-      var inItem = keywords.filter(function(t){ return item.indexOf(t) !== -1; });
-      if (inMod.length > 0 && inItem.length > 0) s += 40;
-      return { req: e.requirement, mod: e.module, item: e.item, tab: e.tab, score: s };
-    }).filter(function(x){ return x.score > 0; }).sort(function(a,b){ return b.score - a.score; }).slice(0,10);
-    if (!allScored.length) {
-      lines.push('No entries scored above 0.');
-    } else {
-      allScored.forEach(function(x) {
-        lines.push('<span style="color:#15803d;font-weight:600;">[' + x.score + ']</span> '
-          + x.tab + ' | mod: <em>' + (x.mod||'—') + '</em> | item: <em>' + (x.item||'—') + '</em> | req: <em>' + x.req + '</em>');
-      });
-    }
-    addMsg('bot', lines.join('<br>'));
-    return;
-  }
-  addMsg('user', q);
+function openContact() {
+  document.getElementById('cpName').value    = currentUser ? currentUser.name : '';
+  document.getElementById('cpClient').value  = '';
+  document.getElementById('cpConcern').value = '';
+  var st = document.getElementById('cpStatus');
+  st.style.display = 'none';
+  var btn = document.getElementById('cpSendBtn');
+  btn.disabled    = true;
+  btn.textContent = '✉ Send Message';
+  btn.style.background = '#16a34a';
+  var panel = document.getElementById('contactPanel');
+  panel.classList.add('open');
+  document.getElementById('contactOverlay').style.display = 'block';
+  setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 10);
+}
+
+function closeContact() {
+  var panel = document.getElementById('contactPanel');
+  panel.style.transform = 'translateX(100%)';
+  setTimeout(function(){
+    panel.classList.remove('open');
+    document.getElementById('contactOverlay').style.display = 'none';
+  }, 300);
+}
+
+function updateCpBtn() {
+  var concern = (document.getElementById('cpConcern').value || '').trim();
+  document.getElementById('cpSendBtn').disabled = !concern.length;
+}
+
+function sendContact() {
+  var name    = (document.getElementById('cpName').value    || '').trim();
+  var client  = (document.getElementById('cpClient').value  || '').trim();
+  var concern = (document.getElementById('cpConcern').value || '').trim();
+  if (!concern) return;
+  var btn = document.getElementById('cpSendBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Sending...';
+  var payload = {
+    type: 'contact',
+    name: name || (currentUser ? currentUser.name : 'Unknown'),
+    email: currentUser ? currentUser.email : 'Unknown',
+    clientName: client,
+    concern: concern,
+    to: CONTACT_EMAIL
+  };
+  fetch(LOGGER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    mode: 'no-cors'
+  }).then(function() {
+    var st = document.getElementById('cpStatus');
+    st.textContent      = '✓ Message sent! We\'ll get back to you at ' + payload.email + ' soon.';
+    st.style.color      = '#15803d';
+    st.style.background = '#f0fdf4';
+    st.style.border     = '1px solid #bbf7d0';
+    st.style.display    = 'block';
+    btn.textContent      = '✓ Sent';
+    btn.style.background = '#15803d';
+    setTimeout(closeContact, 2500);
+  }).catch(function() {
+    var st = document.getElementById('cpStatus');
+    st.textContent      = '⚠ Something went wrong. Please try again.';
+    st.style.color      = '#dc2626';
+    st.style.background = '#fef2f2';
+    st.style.border     = '1px solid #fecaca';
+    st.style.display    = 'block';
+    btn.disabled    = false;
+    btn.textContent = '✉ Send Message';
+  });
+}
+
+function sendMessage(){
+  var input=document.getElementById('chatInput');
+  var q=input.value.trim();
+  if(!q)return;
+  input.value='';
+  addMsg('user',q);
   addTyping();
-  document.getElementById('sendBtn').disabled = true;
-
-  setTimeout(function() {
+  document.getElementById('sendBtn').disabled=true;
+  setTimeout(function(){
     removeTyping();
     turnCount++;
-
-    // 1. Small talk check (greetings, thanks, etc.)
-    var st = smallTalk(q);
-    if (st) {
-      addMsg('bot', st);
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    // 2. Bot was waiting for a tab choice — check if this message answers it
-    if (ctx.pendingAction) {
-      var tab = detectTabChoice(q);
-      if (tab) {
-        respondToTab(tab);
-        document.getElementById('sendBtn').disabled = false;
-        return;
-      }
-      // User said something else — cancel pending and fall through
-      ctx.pendingAction = null;
-      ctx.pendingPayload = null;
-    }
-
-    // 3. Recommendation follow-up — user already got a policy list and now asks for recommendations
-    if (detectRecommendationIntent(q) && ctx.lastTab) {
-      ctx.showRecommendations = true;
-      var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-      addMsg('bot', buildPolicyList(ctx.lastTab, true) + footer);
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    // 4. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
-    if (detectPolicyListIntent(q)) {
-      ctx.lastTopic = q;
-      ctx.showRecommendations = detectRecommendationIntent(q);
-      var inlineTab = detectTabChoice(q);
-      if (inlineTab) {
-        ctx.pendingAction = 'policyList';
-        ctx.pendingPayload = null;
-        ctx.lastTab = inlineTab;
-        var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-        var reply = buildPolicyList(inlineTab, ctx.showRecommendations);
-        ctx.pendingAction = null;
-        ctx.pendingPayload = null;
-        addMsg('bot', reply + footer);
-        document.getElementById('sendBtn').disabled = false;
-      } else {
-        ctx.pendingAction = 'policyList';
-        ctx.pendingPayload = null;
-        addMsg('bot', tabPrompt('Sure! Would you like to see the items for:'));
-        document.getElementById('sendBtn').disabled = false;
-      }
-      return;
-    }
-
-    // 5. Follow-up tab switch: "what about payroll?" after a previous answer
-    var switchTab = detectTabSwitch(q);
-    if (switchTab && (ctx.lastTab || ctx.lastResults.length)) {
-      ctx.pendingAction = ctx.lastResults.length ? 'search' : 'policyList';
-      ctx.pendingPayload = ctx.lastResults.length ? ctx.lastResults : null;
-      respondToTab(switchTab);
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    // 6. Regular KB search
-    var results = search(q);
-    ctx.lastResults = results;
-    ctx.lastTopic = q;
-    ctx.lastTab = null;
-
-    // If we got results that span both tabs, ask which tab
-    var hasBoth = results.length > 0 &&
-      results.some(function(e){ return e.tab === 'HR'; }) &&
-      results.some(function(e){ return e.tab === 'Payroll'; });
-
-    if (hasBoth) {
-      ctx.pendingAction = 'search';
-      ctx.pendingPayload = results;
-      addMsg('bot', tabPrompt('I found results in both HR and Payroll. Which would you like to see?'));
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    if (!results.length) {
-      showSubmitPrompt(q);
-      document.getElementById('sendBtn').disabled = false;
-      return;
-    }
-
-    var reply = buildReply(results);
-    if (results.length > 0 && turnCount % 3 === 0)
-      reply += '<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
-    addMsg('bot', reply);
-    document.getElementById('sendBtn').disabled = false;
-  }, 600);
+    var st=smallTalk(q);
+    if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
+    var results=search(q);
+    lastResults=results;
+    var reply=buildReply(results);
+    if(results.length>0&&turnCount%3===0) reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
+    addMsg('bot',reply);
+    document.getElementById('sendBtn').disabled=false;
+  },600);
 }
+
 function ask(chip){document.getElementById('chatInput').value=chip.textContent;sendMessage();}
 function setSt(c,t){document.getElementById('sDot').className='dot '+c;document.getElementById('sTxt').textContent=t;}
 function setWelcome(h){var el=document.getElementById('welcomeBub');if(el)el.innerHTML=h;}
@@ -1017,6 +536,7 @@ function addTyping(){
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
 function removeTyping(){var el=document.getElementById('typing');if(el)el.remove();}
+loadSheet();
 </script>
 </body>
 </html>
