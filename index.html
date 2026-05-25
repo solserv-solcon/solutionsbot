@@ -283,12 +283,12 @@ function showSubmitPrompt(question) {
   pendingLog = { question: question, clientName: '', remarks: '' };
   var html =
     "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
-    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
-    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn();}\" " +
+    "<div id='logForm' style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
+    "<input id='logClientName' type='text' placeholder='Client name' " +
+    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn(this);}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "<input id='logRemarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
-    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn();}\" " +
+    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn(this);}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
     "<div class='opt-btns' style='margin-top:10px;'>" +
@@ -299,15 +299,16 @@ function showSubmitPrompt(question) {
   addMsg('bot', html);
 }
 
-function updateSubmitBtn() {
-  var btn = document.getElementById('submitBtn');
+function updateSubmitBtn(inputEl) {
+  // Walk up from the input to find the form container, then find the submit button
+  var form = inputEl.closest ? inputEl.closest('#logForm') : document.getElementById('logForm');
+  var container = form ? form.parentElement : inputEl.parentElement.parentElement;
+  var btn = container ? container.querySelector('#submitBtn') : document.getElementById('submitBtn');
   if (!btn) return;
-  var clientName = (document.getElementById('logClientName') || {}).value || '';
-  var remarks    = (document.getElementById('logRemarks')    || {}).value || '';
-  var hasInput   = clientName.trim().length > 0 || remarks.trim().length > 0;
-  btn.disabled = !hasInput;
-  btn.style.opacity    = hasInput ? '1'            : '0.4';
-  btn.style.cursor     = hasInput ? 'pointer'      : 'not-allowed';
+  var hasInput = (pendingLog.clientName || '').trim().length > 0 || (pendingLog.remarks || '').trim().length > 0;
+  btn.disabled             = !hasInput;
+  btn.style.opacity        = hasInput ? '1'           : '0.4';
+  btn.style.cursor         = hasInput ? 'pointer'     : 'not-allowed';
 }
 
 function disableSubmitButtons() {
