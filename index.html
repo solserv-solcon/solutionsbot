@@ -73,20 +73,7 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
     <div style="font-size:1.2rem;font-weight:700;color:#0f172a;">Solutions Services KB</div>
     <div style="font-size:.82rem;color:#64748b;line-height:1.5;">Sign in with your Google account to access the knowledge base.</div>
     <hr style="width:100%;border:none;border-top:1px solid #e2e8f0;margin:4px 0;"/>
-    <div id="g_id_onload"
-      data-client_id="290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com"
-      data-callback="onGoogleSignIn"
-      data-auto_prompt="true">
-    </div>
-    <div class="g_id_signin"
-      data-type="standard"
-      data-shape="rectangular"
-      data-theme="outline"
-      data-text="sign_in_with"
-      data-size="large"
-      data-logo_alignment="left"
-      data-width="300">
-    </div>
+    <div id="googleSignInBtn" style="min-height:44px;display:flex;align-items:center;justify-content:center;"></div>
     <div id="loginStatus" style="font-size:.76rem;color:#94a3b8;min-height:18px;">Waiting for sign-in...</div>
   </div>
 </div>
@@ -161,6 +148,19 @@ function applySignedInUser(user) {
   document.getElementById('userInfo').style.display = 'flex';
   loadSheet();
 }
+
+function initGoogleSignIn() {
+  if (!window.google || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: onGoogleSignIn,
+    auto_select: false
+  });
+  google.accounts.id.renderButton(
+    document.getElementById('googleSignInBtn'),
+    { theme: 'outline', size: 'large', text: 'sign_in_with', width: 300, logo_alignment: 'left' }
+  );
+}
 function onGoogleSignIn(response) {
   var parts = response.credential.split('.');
   var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
@@ -173,10 +173,29 @@ function restoreSession() {
     var saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       var user = JSON.parse(saved);
-      if (user && user.email && user.expires && Date.now() < user.expires) { applySignedInUser(user); }
-      else { sessionStorage.removeItem(STORAGE_KEY); }
+      if (user && user.email && user.expires && Date.now() < user.expires) {
+        applySignedInUser(user); return;
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
     }
   } catch(e) {}
+  // No valid session — initialize Google Sign-In button
+  // Try immediately, then wait for GSI script to load
+  initGoogleSignIn();
+  if (!window.google) {
+    var gsiScript = document.querySelector('script[src*="accounts.google.com"]');
+    if (gsiScript) {
+      gsiScript.addEventListener('load', initGoogleSignIn);
+    } else {
+      // Retry a few times
+      var attempts = 0;
+      var retry = setInterval(function() {
+        if (window.google && google.accounts) { initGoogleSignIn(); clearInterval(retry); }
+        if (++attempts > 20) clearInterval(retry);
+      }, 300);
+    }
+  }
 }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', restoreSession); } else { restoreSession(); }
 function signOut() {
