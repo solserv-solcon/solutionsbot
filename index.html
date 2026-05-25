@@ -223,7 +223,7 @@ var notFound = [
 ];
 
 var policyListTriggers = ['unsupported','not supported','partially supported','partial support','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','all items','list items','show items','what items','what modules','all modules','list modules'];
-var recommendationTriggers = ['recommendation','recommendations','recommended','with recommendation','include recommendation','show recommendation','and recommendation','with details','include details','show details','with resolution','include resolution','show resolution','and resolution'];
+var recommendationTriggers = ['recommendation','recommendations','recommended','resolution','resolutions','with recommendation','include recommendation','show recommendation','and recommendation','with details','include details','show details','with resolution','include resolution','show resolution','and resolution'];
 
 function detectPolicyListIntent(q){ var l=q.toLowerCase(); return policyListTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
 function detectRecommendationIntent(q){ var l=q.toLowerCase(); return recommendationTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
@@ -705,13 +705,20 @@ function sendMessage(){
       }
     }
 
-    // 4. Recommendation follow-up — use inline tab if specified, else ctx.lastTab
+    // 4. Recommendation follow-up — use inline tab if specified, else ctx.lastTab, else ask
     if(detectRecommendationIntent(q)){
       var recTab=detectTabChoice(q)||ctx.lastTab;
       if(recTab){
         ctx.showRecommendations=true; ctx.lastTab=recTab;
         var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
         addMsg('bot',buildPolicyList(recTab,true)+footer);
+        document.getElementById('sendBtn').disabled=false;return;
+      } else {
+        // No tab specified and no previous tab — ask
+        ctx.pendingAction='policyList';
+        ctx.pendingPayload=null;
+        ctx.showRecommendations=true;
+        addMsg('bot',tabPrompt('Sure! Would you like to see the recommendations for:'));
         document.getElementById('sendBtn').disabled=false;return;
       }
     }
