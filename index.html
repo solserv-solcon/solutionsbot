@@ -696,8 +696,8 @@ function sendMessage(){
       ctx.pendingAction=null;ctx.pendingPayload=null;
     }
 
-    // 3. Bare tab name follow-up - only fire for SHORT queries (not full sentences like "recommendations for hr")
-    if(ctx.lastTab && q.trim().split(/\s+/).length <= 3){
+    // 3. Bare tab name follow-up - only fire for SHORT queries with no other intent
+    if(ctx.lastTab && q.trim().split(/\s+/).length <= 3 && !detectRecommendationIntent(q)){
       var bareTab=detectTabChoice(q);
       if(bareTab){
         ctx.pendingAction='policyList'; ctx.pendingPayload=null;
