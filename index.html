@@ -51,12 +51,13 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .send:hover:not(:disabled) { opacity: .85; }
 .notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .result-card { background: #f8fafc; border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
+#cpOverlay, #cpPanel { position: fixed !important; }
 </style>
 </head>
 <body>
-
-<div id="cpOverlay" onclick="closeContact()"></div>
-<div id="cpPanel">
+<!-- Login overlay -->
+<div id="cpOverlay" onclick="closeContact()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;"></div>
+<div id="cpPanel" style="display:none;position:fixed;top:0;right:0;height:100%;width:min(390px,100%);background:#fff;z-index:9999;box-shadow:-6px 0 32px rgba(0,0,0,.18);flex-direction:column;transform:translateX(100%);transition:transform .3s ease;">
   <div style="background:linear-gradient(135deg,#14532d,#16a34a);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
     <div><div style="color:#fff;font-weight:700;font-size:1.05rem;">&#9993; Contact Us</div><div style="color:rgba(255,255,255,.78);font-size:.75rem;margin-top:3px;">Send a message to Solutions Services</div></div>
     <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
@@ -695,8 +696,8 @@ function sendMessage(){
       ctx.pendingAction=null;ctx.pendingPayload=null;
     }
 
-    // 3. Bare tab name follow-up ("payroll", "hr") when we just showed a policy list
-    if(ctx.lastTab){
+    // 3. Bare tab name follow-up - only fire for SHORT queries (not full sentences like "recommendations for hr")
+    if(ctx.lastTab && q.trim().split(/\s+/).length <= 3){
       var bareTab=detectTabChoice(q);
       if(bareTab){
         ctx.pendingAction='policyList'; ctx.pendingPayload=null;
