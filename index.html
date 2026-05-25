@@ -643,7 +643,24 @@ function sendContact() {
 var pendingLog = null;
 
 function showSubmitFromGuide(question) {
-  showSubmitPrompt(question);
+  pendingLog = { question: question, clientName: '', remarks: '' };
+  var uid = 'prompt_' + Date.now();
+  var html =
+    "&#128172; Send us a message and our team will get back to you as soon as possible!<br><br>" +
+    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
+    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
+    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
+    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
+    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
+    "</div>" +
+    "<div style='display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;'>" +
+    "<button id='" + uid + "_submit' onclick='submitUnanswered()' disabled style='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
+    "<button id='" + uid + "_dismiss' style='background:#fff0f0;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
+    "</div>";
+  pendingLog._uid = uid;
+  addMsg('bot', html);
 }
 
 function showSubmitPrompt(question) {
