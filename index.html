@@ -170,37 +170,22 @@ function applySignedInUser(user) {
 }
 
 function setCookie(name, value, hours) {
-  var expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
-  var domain = window.location.hostname;
-  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/;domain=' + domain + ';SameSite=Lax';
-  // Fallback without domain
-  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/;SameSite=Lax';
-  // Also try sessionStorage and localStorage as fallbacks
-  try { sessionStorage.setItem(name, value); } catch(e) {}
   try { localStorage.setItem(name, value); } catch(e) {}
 }
 
 function getCookie(name) {
-  // Try cookie first
-  var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-  if (match) return decodeURIComponent(match[1]);
-  // Fallback to sessionStorage
-  try { var s = sessionStorage.getItem(name); if (s) return s; } catch(e) {}
-  // Fallback to localStorage
   try { var l = localStorage.getItem(name); if (l) return l; } catch(e) {}
   return null;
 }
 
 function deleteCookie(name) {
-  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-  try { sessionStorage.removeItem(name); } catch(e) {}
   try { localStorage.removeItem(name); } catch(e) {}
 }
 
 function onGoogleSignIn(response) {
   var parts = response.credential.split('.');
   var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-  var user = { name: payload.name, givenName: payload.given_name, email: payload.email, picture: payload.picture };
+  var user = { name: payload.name, givenName: payload.given_name, email: payload.email, picture: payload.picture, expires: Date.now() + (8 * 60 * 60 * 1000) };
   try { setCookie(STORAGE_KEY, JSON.stringify(user), 8); } catch(e) {}
   applySignedInUser(user);
 }
@@ -211,8 +196,10 @@ function onGoogleSignIn(response) {
     var saved = getCookie(STORAGE_KEY);
     if (saved) {
       var user = JSON.parse(saved);
-      if (user && user.email) {
+      if (user && user.email && user.expires && Date.now() < user.expires) {
         applySignedInUser(user);
+      } else {
+        deleteCookie(STORAGE_KEY);
       }
     }
   } catch(e) {}
