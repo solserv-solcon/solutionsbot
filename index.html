@@ -55,6 +55,31 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </style>
 </head>
 <body>
+
+<!-- Google One Tap login overlay -->
+<div id="loginOverlay" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0f2d1a,#14532d,#166534);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;">
+  <div style="background:white;border-radius:20px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;max-width:380px;text-align:center;">
+    <div style="width:60px;height:60px;background:linear-gradient(135deg,#14532d,#16a34a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;">&#128202;</div>
+    <div style="font-size:1.2rem;font-weight:700;color:#0f172a;">Solutions Services KB</div>
+    <div style="font-size:.82rem;color:#64748b;line-height:1.5;">Sign in with your Google account to access the knowledge base.</div>
+    <hr style="width:100%;border:none;border-top:1px solid #e2e8f0;margin:4px 0;"/>
+    <div id="g_id_onload"
+      data-client_id="290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com"
+      data-callback="onGoogleSignIn"
+      data-auto_prompt="true">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-shape="rectangular"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-size="large"
+      data-logo_alignment="left"
+      data-width="300">
+    </div>
+    <div id="loginStatus" style="font-size:.76rem;color:#94a3b8;min-height:18px;">Waiting for sign-in...</div>
+  </div>
+</div>
 <!-- Login overlay -->
 <div id="cpOverlay" onclick="closeContact()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;"></div>
 <div id="cpPanel" style="display:none;position:fixed;top:0;right:0;height:100%;width:min(390px,100%);background:#fff;z-index:9999;box-shadow:-6px 0 32px rgba(0,0,0,.18);flex-direction:column;transform:translateX(100%);transition:transform .3s ease;">
@@ -79,6 +104,11 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
       <p>Ask anything about policies, procedures, and resolutions</p>
     </div>
     <div class="hbtns">
+      <div class="user-info" id="userInfo" style="display:none">
+        <img class="user-avatar" id="userAvatar" src="" alt=""/>
+        <span class="user-name" id="userName"></span>
+        <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+      </div>
       <button class="hbtn" onclick="loadSheet()">&#128260; Refresh</button>
       <button class="hbtn" onclick="openContact()">&#9993; Contact Us</button>
     </div>
