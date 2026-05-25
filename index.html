@@ -262,11 +262,12 @@ function buildPolicyList(tab, showRec) {
 }
 
 function tabPrompt(msg){
+  var btnStyle='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;margin:3px;';
   return (msg||'Sure! Which data would you like to check?')+
-    '<div class="opt-btns">'+
-    '<button class="opt-btn" onclick="chooseTab(\'HR\')">&#129333; HR</button>'+
-    '<button class="opt-btn" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>'+
-    '<button class="opt-btn" onclick="chooseTab(\'Both\')">&#128203; Both</button>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;">'+
+    '<button style="'+btnStyle+'" onclick="chooseTab(\'HR\')">&#129333; HR</button>'+
+    '<button style="'+btnStyle+'" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>'+
+    '<button style="'+btnStyle+'" onclick="chooseTab(\'Both\')">&#128203; Both</button>'+
     '</div>';
 }
 function chooseTab(tab){addMsg('user',tab);respondToTab(tab);}
@@ -618,9 +619,9 @@ function showSubmitPrompt(question) {
     "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
-    "<div class='opt-btns' style='margin-top:10px;'>" +
-    "<button id='" + uid + "_submit' class='opt-btn' onclick='submitUnanswered()' disabled style='opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
-    "<button id='" + uid + "_dismiss' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
+    "<div style='display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;'>" +
+    "<button id='" + uid + "_submit' onclick='submitUnanswered()' disabled style='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
+    "<button id='" + uid + "_dismiss' style='background:#fff0f0;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
     "</div>";
   pendingLog._uid = uid;
   addMsg('bot', html);
@@ -687,19 +688,34 @@ function sendMessage(){
     var st=smallTalk(q);
     if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
 
+    // 2. Waiting for tab choice
     if(ctx.pendingAction){
       var t=detectTabChoice(q);
       if(t){respondToTab(t);document.getElementById('sendBtn').disabled=false;return;}
       ctx.pendingAction=null;ctx.pendingPayload=null;
     }
 
-    if(detectRecommendationIntent(q)&&ctx.lastTab){
-      ctx.showRecommendations=true;
-      var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-      addMsg('bot',buildPolicyList(ctx.lastTab,true)+footer);
-      document.getElementById('sendBtn').disabled=false;return;
+    // 3. Bare tab name follow-up ("payroll", "hr") when we just showed a policy list
+    if(ctx.lastTab){
+      var bareTab=detectTabChoice(q);
+      if(bareTab){
+        ctx.pendingAction='policyList'; ctx.pendingPayload=null;
+        respondToTab(bareTab); document.getElementById('sendBtn').disabled=false; return;
+      }
     }
 
+    // 4. Recommendation follow-up — use inline tab if specified, else ctx.lastTab
+    if(detectRecommendationIntent(q)){
+      var recTab=detectTabChoice(q)||ctx.lastTab;
+      if(recTab){
+        ctx.showRecommendations=true; ctx.lastTab=recTab;
+        var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+        addMsg('bot',buildPolicyList(recTab,true)+footer);
+        document.getElementById('sendBtn').disabled=false;return;
+      }
+    }
+
+    // 5. Policy list intent
     if(detectPolicyListIntent(q)){
       ctx.lastTopic=q; ctx.showRecommendations=detectRecommendationIntent(q);
       var it=detectTabChoice(q);
@@ -714,6 +730,7 @@ function sendMessage(){
       document.getElementById('sendBtn').disabled=false;return;
     }
 
+    // 6. Follow-up tab switch: "what about payroll?"
     var sw=detectTabSwitch(q);
     if(sw&&(ctx.lastTab||ctx.lastResults.length)){
       ctx.pendingAction=ctx.lastResults.length?'search':'policyList';
@@ -721,6 +738,7 @@ function sendMessage(){
       respondToTab(sw);document.getElementById('sendBtn').disabled=false;return;
     }
 
+    // 7. Regular KB search
     var results=search(q);
     ctx.lastResults=results; ctx.lastTopic=q; ctx.lastTab=null;
     var hasBoth=results.length>0&&results.some(function(e){return e.tab==='HR';})&&results.some(function(e){return e.tab==='Payroll';});
