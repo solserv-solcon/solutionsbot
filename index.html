@@ -229,18 +229,27 @@ function detectTabSwitch(q) {
 
 
 var synonyms = {
-  leave:['leave','vacation','vl','sl','sick','absent','time off','day off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
-  password:['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
-  payroll:['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
-  wfh:['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
+  leave:        ['leave','vacation','vl','sl','sick','absent','time off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
+  halfday:      ['half day','half-day','0.5 day','half a day','4 hours leave','4hr leave','4 hour leave'],
+  hourlyleave:  ['hourly leave','hourly','per hour leave','1 hour leave','2 hour leave','3 hour leave','by the hour','fractional leave'],
+  password:     ['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
+  payroll:      ['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
+  wfh:          ['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
   reimbursement:['reimbursement','reimburse','expense','receipt','claim','expense report'],
-  refund:['refund','money back','return payment','cancel subscription','get my money'],
-  it:['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
-  escalation:['escalate','escalation','unresolved','complaint','not resolved','follow up'],
-  privacy:['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
-  thirteenth:['13th month','thirteenth month','christmas bonus','bonus','13th'],
-  balance:['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
-  leavetypes:['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves']
+  refund:       ['refund','money back','return payment','cancel subscription','get my money'],
+  it:           ['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
+  escalation:   ['escalate','escalation','unresolved','complaint','not resolved','follow up'],
+  privacy:      ['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
+  thirteenth:   ['13th month','thirteenth month','christmas bonus','bonus','13th'],
+  balance:      ['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
+  leavetypes:   ['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves'],
+  nightdiff:    ['night diff','nd','night differential','night shift differential','graveyard','late shift'],
+  overtime:     ['ot','overtime','extra hours','work beyond','beyond regular hours'],
+  graceperiod:  ['grace period','grace','late','tardiness','tardy','lateness'],
+  costcenter:   ['cost center','cost centre','department cost','budget center'],
+  audittrail:   ['audit trail','audit log','activity log','change log','history log','who changed','track changes'],
+  brokenshift:  ['broken shift','split shift','split schedule','divided shift'],
+  subdept:      ['sub department','sub-department','child department','department under'],
 };
 
 var greetings  = ['hi','hello','hey','good morning','good afternoon','good evening','sup','yo','kumusta','kamusta','hi there','hello there'];
@@ -277,7 +286,7 @@ function showSubmitPrompt(question) {
     "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
     "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, details about the policy...' " +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
     "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
@@ -543,10 +552,17 @@ function search(q) {
     // Per-keyword scoring across all fields
     keywords.forEach(function(t) {
       if (t.length < 2) return;
-      var hitItem = item.indexOf(t) !== -1;
-      var hitMod  = mod.indexOf(t)  !== -1;
-      var hitReq  = req.indexOf(t)  !== -1;
-      var hitRes  = res.indexOf(t)  !== -1;
+
+      // For short tokens (<=3 chars) use whole-word matching to avoid
+      // substring false positives e.g. "hi" matching inside "shift"
+      var matchFn = t.length <= 3
+        ? function(field) { return new RegExp('\\b' + t + '\\b').test(field); }
+        : function(field) { return field.indexOf(t) !== -1; };
+
+      var hitItem = matchFn(item);
+      var hitMod  = matchFn(mod);
+      var hitReq  = matchFn(req);
+      var hitRes  = matchFn(res);
 
       if (hitItem) s += 20;
       if (hitMod)  s += 12;
