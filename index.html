@@ -52,14 +52,24 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .result-card { background: #f8fafc; border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
 #cpOverlay, #cpPanel { position: fixed !important; }
+/* Login overlay */
+#loginOverlay { position:fixed;inset:0;z-index:10000;background:linear-gradient(135deg,#0f2d1a,#14532d,#166534);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px; }
+.login-card { background:white;border-radius:20px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;max-width:380px;text-align:center; }
+.login-logo { width:60px;height:60px;background:linear-gradient(135deg,#14532d,#16a34a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px; }
+/* Header user info */
+.user-info { display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:4px 10px 4px 5px; }
+.user-avatar { width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);object-fit:cover;flex-shrink:0; }
+.user-name { font-size:.74rem;color:white;opacity:.95;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.sign-out-btn { background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:white;border-radius:6px;padding:3px 8px;font-size:.7rem;cursor:pointer;white-space:nowrap; }
+.sign-out-btn:hover { background:rgba(255,255,255,.28); }
 </style>
 </head>
 <body>
 
 <!-- Google One Tap login overlay -->
-<div id="loginOverlay" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0f2d1a,#14532d,#166534);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;">
-  <div style="background:white;border-radius:20px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;max-width:380px;text-align:center;">
-    <div style="width:60px;height:60px;background:linear-gradient(135deg,#14532d,#16a34a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;">&#128202;</div>
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">&#128202;</div>
     <div style="font-size:1.2rem;font-weight:700;color:#0f172a;">Solutions Services KB</div>
     <div style="font-size:.82rem;color:#64748b;line-height:1.5;">Sign in with your Google account to access the knowledge base.</div>
     <hr style="width:100%;border:none;border-top:1px solid #e2e8f0;margin:4px 0;"/>
@@ -155,23 +165,23 @@ function onGoogleSignIn(response) {
   var parts = response.credential.split('.');
   var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
   var user = { name:payload.name, givenName:payload.given_name, email:payload.email, picture:payload.picture, expires:Date.now()+(8*60*60*1000) };
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
   applySignedInUser(user);
 }
 function restoreSession() {
   try {
-    var saved = localStorage.getItem(STORAGE_KEY);
+    var saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       var user = JSON.parse(saved);
       if (user && user.email && user.expires && Date.now() < user.expires) { applySignedInUser(user); }
-      else { localStorage.removeItem(STORAGE_KEY); }
+      else { sessionStorage.removeItem(STORAGE_KEY); }
     }
   } catch(e) {}
 }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', restoreSession); } else { restoreSession(); }
 function signOut() {
   currentUser = null;
-  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch(e) {}
   if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
   document.getElementById('loginOverlay').style.display = 'flex';
   document.getElementById('userInfo').style.display = 'none';
