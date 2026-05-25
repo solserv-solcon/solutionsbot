@@ -171,16 +171,30 @@ function applySignedInUser(user) {
 
 function setCookie(name, value, hours) {
   var expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
+  var domain = window.location.hostname;
+  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/;domain=' + domain + ';SameSite=Lax';
+  // Fallback without domain
   document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/;SameSite=Lax';
+  // Also try sessionStorage and localStorage as fallbacks
+  try { sessionStorage.setItem(name, value); } catch(e) {}
+  try { localStorage.setItem(name, value); } catch(e) {}
 }
 
 function getCookie(name) {
+  // Try cookie first
   var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-  return match ? decodeURIComponent(match[1]) : null;
+  if (match) return decodeURIComponent(match[1]);
+  // Fallback to sessionStorage
+  try { var s = sessionStorage.getItem(name); if (s) return s; } catch(e) {}
+  // Fallback to localStorage
+  try { var l = localStorage.getItem(name); if (l) return l; } catch(e) {}
+  return null;
 }
 
 function deleteCookie(name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+  try { sessionStorage.removeItem(name); } catch(e) {}
+  try { localStorage.removeItem(name); } catch(e) {}
 }
 
 function onGoogleSignIn(response) {
