@@ -285,27 +285,47 @@ function showSubmitPrompt(question) {
     "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
     "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
     "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
-    "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
+    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn();}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
-    "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
+    "<input id='logRemarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
+    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn();}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
     "<div class='opt-btns' style='margin-top:10px;'>" +
-    "<button class='opt-btn' onclick='submitUnanswered()'>&#128229; Submit</button>" +
-    "<button class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit()'>&#10005; No thanks</button>" +
+    "<button id='submitBtn' class='opt-btn' onclick='submitUnanswered()' disabled " +
+    "style='opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
+    "<button id='dismissBtn' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit()'>&#10005; No thanks</button>" +
     "</div>";
   addMsg('bot', html);
+}
+
+function updateSubmitBtn() {
+  var btn = document.getElementById('submitBtn');
+  if (!btn) return;
+  var clientName = (document.getElementById('logClientName') || {}).value || '';
+  var remarks    = (document.getElementById('logRemarks')    || {}).value || '';
+  var hasInput   = clientName.trim().length > 0 || remarks.trim().length > 0;
+  btn.disabled = !hasInput;
+  btn.style.opacity    = hasInput ? '1'            : '0.4';
+  btn.style.cursor     = hasInput ? 'pointer'      : 'not-allowed';
+}
+
+function disableSubmitButtons() {
+  var submitBtn  = document.getElementById('submitBtn');
+  var dismissBtn = document.getElementById('dismissBtn');
+  var inputs     = document.querySelectorAll('#logClientName, #logRemarks');
+  inputs.forEach(function(el) { el.disabled = true; });
+  if (submitBtn)  { submitBtn.disabled  = true; submitBtn.style.opacity  = '0.4'; submitBtn.style.cursor  = 'not-allowed'; }
+  if (dismissBtn) { dismissBtn.disabled = true; dismissBtn.style.opacity = '0.4'; dismissBtn.style.cursor = 'not-allowed'; }
 }
 
 function submitUnanswered() {
   if (!pendingLog) return;
   var clientName = (pendingLog.clientName || '').trim();
   var remarks    = (pendingLog.remarks    || '').trim();
+  if (!clientName && !remarks) return; // guard: Submit should be disabled anyway
 
-  // Disable inputs and buttons immediately to prevent double submit
-  var els = document.querySelectorAll('#logClientName, #logRemarks');
-  els.forEach(function(el) { el.disabled = true; });
+  disableSubmitButtons();
 
   var payload = {
     name:       currentUser ? currentUser.name  : 'Unknown',
@@ -334,6 +354,7 @@ function submitUnanswered() {
 
 function dismissSubmit() {
   pendingLog = null;
+  disableSubmitButtons();
   addMsg('bot', "No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
 }
 
