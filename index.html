@@ -170,7 +170,10 @@ function applySignedInUser(user) {
 }
 
 function setCookie(name, value, hours) {
-  try { localStorage.setItem(name, value); } catch(e) {}
+  try { 
+    localStorage.setItem(name, value);
+    console.log('[KB] Saved to localStorage:', name, localStorage.getItem(name) ? 'OK' : 'FAILED');
+  } catch(e) { console.log('[KB] localStorage error:', e); }
 }
 
 function getCookie(name) {
@@ -194,15 +197,18 @@ function onGoogleSignIn(response) {
 (function restoreSession() {
   try {
     var saved = getCookie(STORAGE_KEY);
+    console.log('[KB] restoreSession — saved:', saved ? 'found' : 'null');
     if (saved) {
       var user = JSON.parse(saved);
       if (user && user.email && user.expires && Date.now() < user.expires) {
+        console.log('[KB] Restoring session for:', user.email);
         applySignedInUser(user);
       } else {
+        console.log('[KB] Session expired or invalid, clearing');
         deleteCookie(STORAGE_KEY);
       }
     }
-  } catch(e) {}
+  } catch(e) { console.log('[KB] restoreSession error:', e); }
 })();
 
 function signOut() {
