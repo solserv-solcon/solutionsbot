@@ -194,7 +194,7 @@ function onGoogleSignIn(response) {
 }
 
 // Try restoring session on page load
-(function restoreSession() {
+function restoreSession() {
   try {
     var saved = getCookie(STORAGE_KEY);
     console.log('[KB] restoreSession — saved:', saved ? 'found' : 'null');
@@ -209,7 +209,14 @@ function onGoogleSignIn(response) {
       }
     }
   } catch(e) { console.log('[KB] restoreSession error:', e); }
-})();
+}
+
+// Run after DOM is fully ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', restoreSession);
+} else {
+  restoreSession();
+}
 
 function signOut() {
   currentUser = null;
