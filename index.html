@@ -83,7 +83,7 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .opt-btn:hover { background:#dcfce7; border-color:#4ade80; }
 .policy-group { margin-bottom:14px; }
 .policy-group-title { font-weight:700; font-size:.82rem; color:#15803d; margin-bottom:5px; display:flex; align-items:center; gap:6px; }
-.policy-item { font-size:.82rem; color:#1e293b; padding:4px 0 4px 14px; border-left:2px solid #d1fae5; margin-bottom:3px; line-height:1.5; }
+.policy-item { font-size:.82rem; color:#1e293b; padding:6px 0 6px 14px; border-left:2px solid #d1fae5; margin-bottom:6px; line-height:1.5; }
 .policy-item .item-label { color:#64748b; font-size:.76rem; }
 </style>
 </head>
@@ -196,11 +196,12 @@ var entries = [], turnCount = 0;
 // ── Conversation context ──────────────────────────────────────────────────────
 // Tracks what the bot is "waiting for" and what topic was last discussed
 var ctx = {
-  pendingAction: null,   // 'chooseTab' — bot asked HR/Payroll/Both, waiting for answer
-  pendingPayload: null,  // data to act on once the pending question is answered
-  lastTopic: null,       // last search query, for follow-ups like "what about payroll?"
-  lastResults: [],       // last KB results shown
-  lastTab: null,         // last tab used in a policy list ('HR','Payroll','Both')
+  pendingAction: null,
+  pendingPayload: null,
+  lastTopic: null,
+  lastResults: [],
+  lastTab: null,
+  showRecommendations: false,
 };
 
 // Detect if user is choosing a tab (HR / Payroll / Both)
@@ -286,7 +287,7 @@ function showSubmitPrompt(question) {
     "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
     "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, details about the policy...' " +
     "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
@@ -642,12 +643,24 @@ var policyListTriggers = [
   'what items','what modules','all modules','list modules'
 ];
 
+var recommendationTriggers = [
+  'recommendation','recommendations','recommended','with recommendation',
+  'include recommendation','show recommendation','and recommendation',
+  'with details','include details','show details','with resolution',
+  'include resolution','show resolution','and resolution'
+];
+
 function detectPolicyListIntent(q) {
   var l = q.toLowerCase();
   return policyListTriggers.some(function(t){ return l.indexOf(t) !== -1; });
 }
 
-function buildPolicyList(tab) {
+function detectRecommendationIntent(q) {
+  var l = q.toLowerCase();
+  return recommendationTriggers.some(function(t){ return l.indexOf(t) !== -1; });
+}
+
+function buildPolicyList(tab, showRecommendations) {
   var filtered = entries.filter(function(e) {
     return tab === 'Both' || e.tab === tab;
   });
@@ -693,7 +706,14 @@ function buildPolicyList(tab) {
       h += '<div class="policy-group">';
       h += '<div class="policy-group-title">&#128193; ' + esc(gk) + '</div>';
       items.forEach(function(e) {
-        h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
+        if (showRecommendations) {
+          h += '<div class="policy-item">'
+            + '<div style="font-weight:600;color:#1e293b;">' + esc(e.item || e.requirement) + '</div>'
+            + '<div style="font-size:.78rem;color:#475569;margin-top:3px;line-height:1.5;">' + esc(e.resolution) + '</div>'
+            + '</div>';
+        } else {
+          h += '<div class="policy-item">' + esc(e.item || e.requirement) + '</div>';
+        }
       });
       h += '</div>';
     });
@@ -726,7 +746,7 @@ function respondToTab(tab) {
     var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
     var reply;
     if (ctx.pendingAction === 'policyList') {
-      reply = buildPolicyList(tab);
+      reply = buildPolicyList(tab, ctx.showRecommendations);
     } else if (ctx.pendingAction === 'search' && ctx.pendingPayload) {
       // Re-run last search filtered to this tab
       var filtered = ctx.pendingPayload.filter(function(e){ return tab === 'Both' || e.tab === tab; });
@@ -836,14 +856,14 @@ function sendMessage() {
     // 3. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
     if (detectPolicyListIntent(q)) {
       ctx.lastTopic = q;
+      ctx.showRecommendations = detectRecommendationIntent(q);
       var inlineTab = detectTabChoice(q);
       if (inlineTab) {
-        // Tab specified in the same message — answer directly
         ctx.pendingAction = 'policyList';
         ctx.pendingPayload = null;
         ctx.lastTab = inlineTab;
         var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-        var reply = buildPolicyList(inlineTab);
+        var reply = buildPolicyList(inlineTab, ctx.showRecommendations);
         ctx.pendingAction = null;
         ctx.pendingPayload = null;
         addMsg('bot', reply + footer);
