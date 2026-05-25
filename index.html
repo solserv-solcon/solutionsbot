@@ -56,32 +56,35 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 <body>
 
 <!-- Contact Us overlay + panel -->
-<div id="contactOverlay" onclick="closeContact()"></div>
-<div id="contactPanel">
-  <div class="cp-head">
+<div id="contactOverlay" onclick="closeContact()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;"></div>
+<div id="contactPanel" style="display:none;position:fixed;right:0;top:0;height:100%;width:100%;max-width:390px;background:white;z-index:501;box-shadow:-6px 0 32px rgba(0,0,0,.18);flex-direction:column;transform:translateX(100%);transition:transform .3s ease;">
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#14532d,#16a34a);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
     <div>
-      <div style="color:white;font-weight:700;font-size:1rem;">&#9993; Contact Us</div>
-      <div style="color:rgba(255,255,255,.75);font-size:.74rem;margin-top:2px;">Send a message to Solutions Services</div>
+      <div style="color:white;font-weight:700;font-size:1.05rem;letter-spacing:.01em;">&#9993; Contact Us</div>
+      <div style="color:rgba(255,255,255,.78);font-size:.75rem;margin-top:3px;">Send a message to Solutions Services</div>
     </div>
-    <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center;">&#10005;</button>
+    <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#10005;</button>
   </div>
-  <div class="cp-body">
+  <!-- Body -->
+  <div style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px;">
     <div>
-      <label class="cp-label">Your Name</label>
-      <input id="cpName" type="text" readonly class="cp-input"/>
+      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Your Name</label>
+      <input id="cpName" type="text" readonly style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;background:#f8fafc;color:#64748b;box-sizing:border-box;outline:none;"/>
     </div>
     <div>
-      <label class="cp-label">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
-      <input id="cpClient" type="text" placeholder="e.g. ABC Corporation" class="cp-input"/>
+      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
+      <input id="cpClient" type="text" placeholder="e.g. ABC Corporation" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;box-sizing:border-box;outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"/>
     </div>
     <div>
-      <label class="cp-label">Concern <span style="color:#dc2626;">*</span></label>
-      <textarea id="cpConcern" placeholder="Describe your concern in detail..." class="cp-textarea" oninput="updateCpBtn()"></textarea>
+      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Concern <span style="color:#dc2626;">*</span></label>
+      <textarea id="cpConcern" placeholder="Describe your concern in detail..." rows="6" oninput="updateCpBtn()" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s;line-height:1.6;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
     </div>
-    <div id="cpStatus"></div>
+    <div id="cpStatus" style="display:none;font-size:.78rem;padding:10px 13px;border-radius:9px;"></div>
   </div>
-  <div class="cp-foot">
-    <button id="cpSendBtn" onclick="sendContact()" disabled>&#9993; Send Message</button>
+  <!-- Footer -->
+  <div style="padding:16px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;">
+    <button id="cpSendBtn" onclick="sendContact()" disabled style="width:100%;background:#16a34a;color:white;border:none;border-radius:10px;padding:12px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:not-allowed;opacity:.4;transition:all .15s;">&#9993; Send Message</button>
   </div>
 </div>
 
@@ -436,7 +439,7 @@ function openContact() {
   btn.textContent = '✉ Send Message';
   btn.style.background = '#16a34a';
   var panel = document.getElementById('contactPanel');
-  panel.classList.add('open');
+  panel.style.display = 'flex';
   document.getElementById('contactOverlay').style.display = 'block';
   setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 10);
 }
@@ -445,14 +448,17 @@ function closeContact() {
   var panel = document.getElementById('contactPanel');
   panel.style.transform = 'translateX(100%)';
   setTimeout(function(){
-    panel.classList.remove('open');
+    panel.style.display = 'none';
     document.getElementById('contactOverlay').style.display = 'none';
   }, 300);
 }
 
 function updateCpBtn() {
   var concern = (document.getElementById('cpConcern').value || '').trim();
-  document.getElementById('cpSendBtn').disabled = !concern.length;
+  var btn = document.getElementById('cpSendBtn');
+  btn.disabled = !concern.length;
+  btn.style.opacity = concern.length ? '1' : '0.4';
+  btn.style.cursor  = concern.length ? 'pointer' : 'not-allowed';
 }
 
 function sendContact() {
