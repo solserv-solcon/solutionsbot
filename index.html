@@ -55,37 +55,19 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </head>
 <body>
 
-<!-- Contact Us overlay + panel -->
-<div id="contactOverlay" onclick="closeContact()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;"></div>
-<div id="contactPanel" style="display:none;">
-  <!-- Header -->
+<div id="cpOverlay" onclick="closeContact()"></div>
+<div id="cpPanel">
   <div style="background:linear-gradient(135deg,#14532d,#16a34a);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-    <div>
-      <div style="color:white;font-weight:700;font-size:1.05rem;letter-spacing:.01em;">&#9993; Contact Us</div>
-      <div style="color:rgba(255,255,255,.78);font-size:.75rem;margin-top:3px;">Send a message to Solutions Services</div>
-    </div>
-    <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#10005;</button>
+    <div><div style="color:#fff;font-weight:700;font-size:1.05rem;">&#9993; Contact Us</div><div style="color:rgba(255,255,255,.78);font-size:.75rem;margin-top:3px;">Send a message to Solutions Services</div></div>
+    <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
   </div>
-  <!-- Body -->
   <div style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px;">
-    <div>
-      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Your Name</label>
-      <input id="cpName" type="text" readonly style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;background:#f8fafc;color:#64748b;box-sizing:border-box;outline:none;"/>
-    </div>
-    <div>
-      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
-      <input id="cpClient" type="text" placeholder="e.g. ABC Corporation" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;box-sizing:border-box;outline:none;transition:border-color .15s;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"/>
-    </div>
-    <div>
-      <label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Concern <span style="color:#dc2626;">*</span></label>
-      <textarea id="cpConcern" placeholder="Describe your concern in detail..." rows="6" oninput="updateCpBtn()" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;transition:border-color .15s;line-height:1.6;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
-    </div>
+    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Your Name</label><input id="cpName" type="text" readonly style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;background:#f8fafc;color:#64748b;box-sizing:border-box;outline:none;"/></div>
+    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label><input id="cpClient" type="text" placeholder="e.g. ABC Corporation" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"/></div>
+    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Concern <span style="color:#dc2626;">*</span></label><textarea id="cpConcern" rows="6" placeholder="Describe your concern in detail..." oninput="updateCpBtn()" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;line-height:1.6;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"></textarea></div>
     <div id="cpStatus" style="display:none;font-size:.78rem;padding:10px 13px;border-radius:9px;"></div>
   </div>
-  <!-- Footer -->
-  <div style="padding:16px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;">
-    <button id="cpSendBtn" onclick="sendContact()" disabled style="width:100%;background:#16a34a;color:white;border:none;border-radius:10px;padding:12px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:not-allowed;opacity:.4;transition:all .15s;">&#9993; Send Message</button>
-  </div>
+  <div style="padding:16px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;"><button id="cpSendBtn" onclick="sendContact()" disabled style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:12px;font-size:.88rem;font-weight:700;font-family:inherit;opacity:.4;cursor:not-allowed;transition:all .15s;">&#9993; Send Message</button></div>
 </div>
 
 <div class="app">
@@ -126,22 +108,94 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 </div>
 
 <script>
+var CLIENT_ID   = '290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com';
+var STORAGE_KEY = 'solserv_kb_user';
+var currentUser = null;
+
+function applySignedInUser(user) {
+  currentUser = user;
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('userAvatar').src = user.picture;
+  document.getElementById('userName').textContent = user.givenName || user.name;
+  document.getElementById('userInfo').style.display = 'flex';
+  loadSheet();
+}
+function onGoogleSignIn(response) {
+  var parts = response.credential.split('.');
+  var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+  var user = { name:payload.name, givenName:payload.given_name, email:payload.email, picture:payload.picture, expires:Date.now()+(8*60*60*1000) };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(user)); } catch(e) {}
+  applySignedInUser(user);
+}
+function restoreSession() {
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      var user = JSON.parse(saved);
+      if (user && user.email && user.expires && Date.now() < user.expires) { applySignedInUser(user); }
+      else { localStorage.removeItem(STORAGE_KEY); }
+    }
+  } catch(e) {}
+}
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', restoreSession); } else { restoreSession(); }
+function signOut() {
+  currentUser = null;
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('userInfo').style.display = 'none';
+  document.getElementById('loginStatus').textContent = 'Signed out. Please sign in again.';
+  document.getElementById('chatInput').disabled = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('chips').style.display = 'none';
+}
+
 var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
-var entries = [], lastResults = [], turnCount = 0;
+var entries = [], turnCount = 0;
+
+var ctx = {
+  pendingAction: null, pendingPayload: null, lastTopic: null,
+  lastResults: [], lastTab: null, showRecommendations: false,
+};
+
+function detectTabChoice(q) {
+  var l = q.toLowerCase().trim();
+  if (l==='hr'||l==='for hr'||l==='hr only'||l==='sa hr'||l==='yung hr') return 'HR';
+  if (l==='payroll'||l==='for payroll'||l==='payroll only'||l==='sa payroll'||l==='yung payroll') return 'Payroll';
+  if (l==='both'||l==='both hr and payroll'||l==='for both'||l==='lahat'||l==='all') return 'Both';
+  if (/\bhr\b/.test(l) && !/payroll/.test(l)) return 'HR';
+  if (/payroll/.test(l) && !/\bhr\b/.test(l)) return 'Payroll';
+  if ((/\bhr\b/.test(l) && /payroll/.test(l)) || /both/.test(l)) return 'Both';
+  return null;
+}
+function detectTabSwitch(q) {
+  var l = q.toLowerCase();
+  var sp = ['what about','how about','paano naman','for payroll','for hr','now payroll','now hr','payroll naman','hr naman','show payroll','show hr'];
+  return sp.some(function(p){ return l.indexOf(p)!==-1; }) ? detectTabChoice(q) : null;
+}
 
 var synonyms = {
-  leave:['leave','vacation','vl','sl','sick','absent','time off','day off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
-  password:['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
-  payroll:['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
-  wfh:['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
+  leave:        ['leave','vacation','vl','sl','sick','absent','time off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
+  halfday:      ['half day','half-day','0.5 day','half a day','4 hours leave','4hr leave','4 hour leave'],
+  hourlyleave:  ['hourly leave','hourly','per hour leave','1 hour leave','2 hour leave','3 hour leave','by the hour','fractional leave'],
+  password:     ['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
+  payroll:      ['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
+  wfh:          ['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
   reimbursement:['reimbursement','reimburse','expense','receipt','claim','expense report'],
-  refund:['refund','money back','return payment','cancel subscription','get my money'],
-  it:['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
-  escalation:['escalate','escalation','unresolved','complaint','not resolved','follow up'],
-  privacy:['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
-  thirteenth:['13th month','thirteenth month','christmas bonus','bonus','13th'],
-  balance:['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
-  leavetypes:['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves']
+  refund:       ['refund','money back','return payment','cancel subscription','get my money'],
+  it:           ['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
+  escalation:   ['escalate','escalation','unresolved','complaint','not resolved','follow up'],
+  privacy:      ['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
+  thirteenth:   ['13th month','thirteenth month','christmas bonus','bonus','13th'],
+  balance:      ['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
+  leavetypes:   ['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves'],
+  nightdiff:    ['night diff','nd','night differential','night shift differential','graveyard','late shift'],
+  overtime:     ['ot','overtime','extra hours','work beyond','beyond regular hours'],
+  graceperiod:  ['grace period','grace','late','tardiness','tardy','lateness'],
+  costcenter:   ['cost center','cost centre','department cost','budget center'],
+  audittrail:   ['audit trail','audit log','activity log','change log','history log','who changed','track changes'],
+  brokenshift:  ['broken shift','split shift','split schedule','divided shift'],
+  subdept:      ['sub department','sub-department','child department','department under'],
 };
 
 var greetings  = ['hi','hello','hey','good morning','good afternoon','good evening','sup','yo','kumusta','kamusta','hi there','hello there'];
@@ -162,10 +216,73 @@ var multiOpeners = [
   'Here are the most relevant results I found:',
 ];
 var notFound = [
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
-  "Hmm, I couldn't find that one! For more help, please contact <strong>Solutions Services</strong> directly.",
+  "Hmm, I couldn't find an answer to that one!",
+  "I don't have that one in my knowledge base yet!",
+  "That one's not in my data yet!",
 ];
+
+var policyListTriggers = ['unsupported','not supported','partially supported','partial support','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','all items','list items','show items','what items','what modules','all modules','list modules'];
+var recommendationTriggers = ['recommendation','recommendations','recommended','with recommendation','include recommendation','show recommendation','and recommendation','with details','include details','show details','with resolution','include resolution','show resolution','and resolution'];
+
+function detectPolicyListIntent(q){ var l=q.toLowerCase(); return policyListTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
+function detectRecommendationIntent(q){ var l=q.toLowerCase(); return recommendationTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
+
+function buildPolicyList(tab, showRec) {
+  var filtered = entries.filter(function(e){ return tab==='Both'||e.tab===tab; });
+  if (!filtered.length) return 'I didn\'t find any entries for <strong>'+tab+'</strong>. Try refreshing!';
+  var buckets={HR:{},Payroll:{}};
+  filtered.forEach(function(e){
+    var gk=(e.module&&e.module.length)?e.module:(e.tab==='HR'?'HR':'Payroll');
+    var b=e.tab==='HR'?buckets.HR:buckets.Payroll;
+    if(!b[gk])b[gk]=[];b[gk].push(e);
+  });
+  var h='Here are all the policies/items in <strong>'+(tab==='Both'?'HR &amp; Payroll':tab)+'</strong>:<br><br>';
+  var total=0;
+  var order=tab==='Payroll'?['Payroll']:tab==='HR'?['HR']:['HR','Payroll'];
+  order.forEach(function(t){
+    var bk=buckets[t];
+    var keys=Object.keys(bk).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase());});
+    if(!keys.length)return;
+    var tc=t==='HR'?'#15803d':'#1d4ed8', tb=t==='HR'?'#dcfce7':'#dbeafe';
+    h+='<div style="font-size:.8rem;font-weight:700;color:'+tc+';background:'+tb+';padding:5px 12px;border-radius:7px;margin-bottom:8px;margin-top:4px;">'+(t==='HR'?'&#129333; HR Policies':'&#128181; Payroll Policies')+'</div>';
+    keys.forEach(function(gk){
+      var items=bk[gk];
+      items.sort(function(a,b){return(a.item||a.requirement).toLowerCase().localeCompare((b.item||b.requirement).toLowerCase());});
+      total+=items.length;
+      h+='<div class="policy-group"><div class="policy-group-title">&#128193; '+esc(gk)+'</div>';
+      items.forEach(function(e){
+        if(showRec){h+='<div class="policy-item"><div style="font-weight:600;color:#1e293b;">'+esc(e.item||e.requirement)+'</div><div style="font-size:.78rem;color:#475569;margin-top:3px;line-height:1.5;">'+esc(e.resolution)+'</div></div>';}
+        else{h+='<div class="policy-item">'+esc(e.item||e.requirement)+'</div>';}
+      });
+      h+='</div>';
+    });
+  });
+  h+='<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>'+total+'</strong> items found.</div>';
+  return h;
+}
+
+function tabPrompt(msg){
+  return (msg||'Sure! Which data would you like to check?')+
+    '<div class="opt-btns">'+
+    '<button class="opt-btn" onclick="chooseTab(\'HR\')">&#129333; HR</button>'+
+    '<button class="opt-btn" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>'+
+    '<button class="opt-btn" onclick="chooseTab(\'Both\')">&#128203; Both</button>'+
+    '</div>';
+}
+function chooseTab(tab){addMsg('user',tab);respondToTab(tab);}
+function respondToTab(tab){
+  ctx.lastTab=tab; addTyping();
+  setTimeout(function(){
+    removeTyping();
+    var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+    var reply;
+    if(ctx.pendingAction==='policyList') reply=buildPolicyList(tab,ctx.showRecommendations);
+    else if(ctx.pendingAction==='search'&&ctx.pendingPayload){ var f=ctx.pendingPayload.filter(function(e){return tab==='Both'||e.tab===tab;}); reply=buildReply(f.length?f:[]); }
+    else reply=buildPolicyList(tab);
+    ctx.pendingAction=null; ctx.pendingPayload=null;
+    addMsg('bot',reply+footer);
+  },500);
+}
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -266,7 +383,7 @@ function parseHR(csv) {
     if (mod.length > 2 && rec.length > 2) {
       // Combine module + item as the requirement for better searching
       var req = item ? mod + ' — ' + item : mod;
-      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR' });
+      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR', module: mod, item: item });
     }
   }
   return result;
@@ -299,7 +416,7 @@ function parsePayroll(csv) {
     var item = (row[itemCol] || '').trim();
     var rec  = (row[recCol]  || '').trim();
     if (item.length > 2 && rec.length > 2) {
-      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll' });
+      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll', module: '', item: item });
     }
   }
   return result;
@@ -420,14 +537,15 @@ function smallTalk(q){
   if(howAreYou.some(function(h){return lower.indexOf(h)!==-1;}))
     return rand(['I am doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
   var followUps=['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
-  if(lastResults.length>0&&followUps.some(function(f){return lower.indexOf(f)!==-1;}))
-    return 'Here is more detail on the top result:<br><br>'+formatEntry(lastResults[0]);
+  if(ctx.lastResults.length>0&&followUps.some(function(f){return lower.indexOf(f)!==-1;}))
+    return 'Here is more detail on the top result:<br><br>'+formatEntry(ctx.lastResults[0]);
   return null;
 }
 
 var LOGGER_URL    = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
 var CONTACT_EMAIL = 'abmanalastas@sprout.ph';
 
+// ── Contact Us ───────────────────────────────────────────────────────────────
 function openContact() {
   document.getElementById('cpName').value    = currentUser ? currentUser.name : '';
   document.getElementById('cpClient').value  = '';
@@ -435,23 +553,21 @@ function openContact() {
   var st = document.getElementById('cpStatus');
   st.style.display = 'none';
   var btn = document.getElementById('cpSendBtn');
-  btn.disabled         = true;
-  btn.style.opacity    = '0.4';
-  btn.style.cursor     = 'not-allowed';
-  btn.textContent      = '✉ Send Message';
-  btn.style.background = '#16a34a';
-  var panel = document.getElementById('contactPanel');
-  panel.style.cssText  = 'display:flex;flex-direction:column;position:fixed;top:0;right:0;height:100%;width:min(390px,100%);background:white;z-index:9999;box-shadow:-6px 0 32px rgba(0,0,0,.2);transform:translateX(100%);transition:transform .3s ease;';
-  document.getElementById('contactOverlay').style.cssText = 'display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;';
+  btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
+  btn.textContent = '\u2709 Send Message'; btn.style.background = '#16a34a';
+  document.getElementById('cpOverlay').style.display = 'block';
+  var panel = document.getElementById('cpPanel');
+  panel.style.display = 'flex';
+  panel.style.transform = 'translateX(100%)';
   setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 15);
 }
 
 function closeContact() {
-  var panel = document.getElementById('contactPanel');
+  var panel = document.getElementById('cpPanel');
   panel.style.transform = 'translateX(100%)';
   setTimeout(function(){
-    panel.style.cssText = 'display:none;';
-    document.getElementById('contactOverlay').style.cssText = 'display:none;';
+    panel.style.display = 'none';
+    document.getElementById('cpOverlay').style.display = 'none';
   }, 300);
 }
 
@@ -469,41 +585,79 @@ function sendContact() {
   var concern = (document.getElementById('cpConcern').value || '').trim();
   if (!concern) return;
   var btn = document.getElementById('cpSendBtn');
-  btn.disabled    = true;
-  btn.textContent = 'Sending...';
-  var payload = {
-    type: 'contact',
-    name: name || (currentUser ? currentUser.name : 'Unknown'),
-    email: currentUser ? currentUser.email : 'Unknown',
-    clientName: client,
-    concern: concern,
-    to: CONTACT_EMAIL
-  };
-  fetch(LOGGER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    mode: 'no-cors'
-  }).then(function() {
+  btn.disabled = true; btn.textContent = 'Sending...';
+  var payload = { type:'contact', name: name||(currentUser?currentUser.name:'Unknown'), email: currentUser?currentUser.email:'Unknown', clientName:client, concern:concern, to:CONTACT_EMAIL };
+  fetch(LOGGER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), mode:'no-cors' })
+  .then(function() {
     var st = document.getElementById('cpStatus');
-    st.textContent      = '✓ Message sent! We\'ll get back to you at ' + payload.email + ' soon.';
-    st.style.color      = '#15803d';
-    st.style.background = '#f0fdf4';
-    st.style.border     = '1px solid #bbf7d0';
-    st.style.display    = 'block';
-    btn.textContent      = '✓ Sent';
-    btn.style.background = '#15803d';
+    st.textContent = '\u2713 Message sent! We\'ll get back to you at ' + payload.email + ' soon.';
+    st.style.cssText = 'display:block;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;font-size:.78rem;padding:10px 13px;border-radius:9px;';
+    btn.textContent = '\u2713 Sent'; btn.style.background = '#15803d';
     setTimeout(closeContact, 2500);
   }).catch(function() {
     var st = document.getElementById('cpStatus');
-    st.textContent      = '⚠ Something went wrong. Please try again.';
-    st.style.color      = '#dc2626';
-    st.style.background = '#fef2f2';
-    st.style.border     = '1px solid #fecaca';
-    st.style.display    = 'block';
-    btn.disabled    = false;
-    btn.textContent = '✉ Send Message';
+    st.textContent = '\u26a0 Something went wrong. Please try again.';
+    st.style.cssText = 'display:block;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;font-size:.78rem;padding:10px 13px;border-radius:9px;';
+    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = '\u2709 Send Message';
   });
+}
+
+// ── Unanswered question flow ──────────────────────────────────────────────────
+var pendingLog = null;
+
+function showSubmitPrompt(question) {
+  pendingLog = { question: question, clientName: '', remarks: '' };
+  var uid = 'prompt_' + Date.now();
+  var html =
+    "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
+    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
+    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
+    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
+    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
+    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
+    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
+    "</div>" +
+    "<div class='opt-btns' style='margin-top:10px;'>" +
+    "<button id='" + uid + "_submit' class='opt-btn' onclick='submitUnanswered()' disabled style='opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
+    "<button id='" + uid + "_dismiss' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
+    "</div>";
+  pendingLog._uid = uid;
+  addMsg('bot', html);
+}
+
+function updateSubmitBtn(uid) {
+  var btn = document.getElementById(uid + '_submit');
+  if (!btn) return;
+  var hasInput = (pendingLog.clientName||'').trim().length > 0 || (pendingLog.remarks||'').trim().length > 0;
+  btn.disabled = !hasInput; btn.style.opacity = hasInput?'1':'0.4'; btn.style.cursor = hasInput?'pointer':'not-allowed';
+}
+
+function disableSubmitButtons() {
+  if (!pendingLog || !pendingLog._uid) return;
+  var uid = pendingLog._uid;
+  ['_submit','_dismiss','_client','_remarks'].forEach(function(s){
+    var el = document.getElementById(uid+s);
+    if (el) { el.disabled = true; if(s==='_submit'||s==='_dismiss'){el.style.opacity='0.4';el.style.cursor='not-allowed';} }
+  });
+}
+
+function dismissSubmit(uid) {
+  disableSubmitButtons(); pendingLog = null;
+  addMsg('bot',"No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
+}
+
+function submitUnanswered() {
+  if (!pendingLog) return;
+  var clientName = (pendingLog.clientName||'').trim();
+  var remarks    = (pendingLog.remarks||'').trim();
+  if (!clientName && !remarks) return;
+  disableSubmitButtons();
+  var payload = { name: currentUser?currentUser.name:'Unknown', email: currentUser?currentUser.email:'Unknown', clientName:clientName, question:pendingLog.question, remarks:remarks };
+  pendingLog = null;
+  fetch(LOGGER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'})
+  .then(function(){ addMsg('bot','&#10003; Got it! Your question has been logged and our team has been notified. We\'ll get back to you at <strong>'+payload.email+'</strong> as soon as possible.<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; Feel free to ask anything else!</div>'); })
+  .catch(function(){ addMsg('bot','&#9888; Something went wrong. Please contact <strong>Solutions Services</strong> directly.'); });
 }
 
 function sendMessage(){
@@ -511,20 +665,70 @@ function sendMessage(){
   var q=input.value.trim();
   if(!q)return;
   input.value='';
-  addMsg('user',q);
-  addTyping();
-  document.getElementById('sendBtn').disabled=true;
+  if(q.toLowerCase().startsWith('debug:')){
+    var dq=q.slice(6).trim(); addMsg('user',q);
+    var kw=tokenize(dq), lines=['<strong>DEBUG:</strong> ['+kw.join(', ')+']<br><br>'];
+    var sc=entries.map(function(e){
+      var req=e.requirement.toLowerCase(),res=e.resolution.toLowerCase(),mod=(e.module||'').toLowerCase(),item=(e.item||'').toLowerCase(),s=0,ph=kw.join(' ');
+      if(req===ph)s+=120;else if(req.indexOf(ph)!==-1)s+=80;
+      if(kw.every(function(t){return req.indexOf(t)!==-1;})) s+=(kw.length>=2?60:40);
+      kw.forEach(function(t){if(item.indexOf(t)!==-1)s+=20;if(mod.indexOf(t)!==-1)s+=12;if(req.indexOf(t)!==-1)s+=15;if(res.indexOf(t)!==-1)s+=5;});
+      var im=kw.filter(function(t){return mod.indexOf(t)!==-1;}),ii=kw.filter(function(t){return item.indexOf(t)!==-1;});
+      if(im.length>0&&ii.length>0)s+=40;
+      return{req:e.requirement,mod:e.module,item:e.item,tab:e.tab,score:s};
+    }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,10);
+    if(!sc.length)lines.push('No entries scored above 0.');
+    else sc.forEach(function(x){lines.push('<span style="color:#15803d;font-weight:600;">['+x.score+']</span> '+x.tab+' | mod:<em>'+(x.mod||'—')+'</em> | item:<em>'+(x.item||'—')+'</em> | <em>'+x.req+'</em>');});
+    addMsg('bot',lines.join('<br>')); return;
+  }
+  addMsg('user',q); addTyping(); document.getElementById('sendBtn').disabled=true;
   setTimeout(function(){
-    removeTyping();
-    turnCount++;
+    removeTyping(); turnCount++;
     var st=smallTalk(q);
     if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
+
+    if(ctx.pendingAction){
+      var t=detectTabChoice(q);
+      if(t){respondToTab(t);document.getElementById('sendBtn').disabled=false;return;}
+      ctx.pendingAction=null;ctx.pendingPayload=null;
+    }
+
+    if(detectRecommendationIntent(q)&&ctx.lastTab){
+      ctx.showRecommendations=true;
+      var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+      addMsg('bot',buildPolicyList(ctx.lastTab,true)+footer);
+      document.getElementById('sendBtn').disabled=false;return;
+    }
+
+    if(detectPolicyListIntent(q)){
+      ctx.lastTopic=q; ctx.showRecommendations=detectRecommendationIntent(q);
+      var it=detectTabChoice(q);
+      if(it){
+        ctx.lastTab=it;
+        var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+        addMsg('bot',buildPolicyList(it,ctx.showRecommendations)+footer);
+      } else {
+        ctx.pendingAction='policyList'; ctx.pendingPayload=null;
+        addMsg('bot',tabPrompt('Sure! Would you like to see the items for:'));
+      }
+      document.getElementById('sendBtn').disabled=false;return;
+    }
+
+    var sw=detectTabSwitch(q);
+    if(sw&&(ctx.lastTab||ctx.lastResults.length)){
+      ctx.pendingAction=ctx.lastResults.length?'search':'policyList';
+      ctx.pendingPayload=ctx.lastResults.length?ctx.lastResults:null;
+      respondToTab(sw);document.getElementById('sendBtn').disabled=false;return;
+    }
+
     var results=search(q);
-    lastResults=results;
+    ctx.lastResults=results; ctx.lastTopic=q; ctx.lastTab=null;
+    var hasBoth=results.length>0&&results.some(function(e){return e.tab==='HR';})&&results.some(function(e){return e.tab==='Payroll';});
+    if(hasBoth){ctx.pendingAction='search';ctx.pendingPayload=results;addMsg('bot',tabPrompt('I found results in both HR and Payroll. Which would you like to see?'));document.getElementById('sendBtn').disabled=false;return;}
+    if(!results.length){showSubmitPrompt(q);document.getElementById('sendBtn').disabled=false;return;}
     var reply=buildReply(results);
-    if(results.length>0&&turnCount%3===0) reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
-    addMsg('bot',reply);
-    document.getElementById('sendBtn').disabled=false;
+    if(results.length>0&&turnCount%3===0)reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
+    addMsg('bot',reply);document.getElementById('sendBtn').disabled=false;
   },600);
 }
 
