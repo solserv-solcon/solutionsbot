@@ -281,50 +281,59 @@ var pendingLog = null; // stores { question } while waiting for client name + re
 
 function showSubmitPrompt(question) {
   pendingLog = { question: question, clientName: '', remarks: '' };
+  var uid = 'prompt_' + Date.now();
   var html =
     "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
-    "<div id='logForm' style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='logClientName' type='text' placeholder='Client name' " +
-    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn(this);}\" " +
+    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
+    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
+    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
-    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn(this);}\" " +
+    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
+    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
     "<div class='opt-btns' style='margin-top:10px;'>" +
-    "<button id='submitBtn' class='opt-btn' onclick='submitUnanswered()' disabled " +
+    "<button id='" + uid + "_submit' class='opt-btn' onclick='submitUnanswered()' disabled " +
     "style='opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
-    "<button id='dismissBtn' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit()'>&#10005; No thanks</button>" +
+    "<button id='" + uid + "_dismiss' class='opt-btn' style='background:#fff0f0;border-color:#fca5a5;color:#b91c1c;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
     "</div>";
+  pendingLog._uid = uid;
   addMsg('bot', html);
 }
 
-function updateSubmitBtn(inputEl) {
-  // Walk up from the input to find the form container, then find the submit button
-  var form = inputEl.closest ? inputEl.closest('#logForm') : document.getElementById('logForm');
-  var container = form ? form.parentElement : inputEl.parentElement.parentElement;
-  var btn = container ? container.querySelector('#submitBtn') : document.getElementById('submitBtn');
+function updateSubmitBtn(uid) {
+  var btn = document.getElementById(uid + '_submit');
   if (!btn) return;
   var hasInput = (pendingLog.clientName || '').trim().length > 0 || (pendingLog.remarks || '').trim().length > 0;
-  btn.disabled             = !hasInput;
-  btn.style.opacity        = hasInput ? '1'           : '0.4';
-  btn.style.cursor         = hasInput ? 'pointer'     : 'not-allowed';
+  btn.disabled       = !hasInput;
+  btn.style.opacity  = hasInput ? '1'          : '0.4';
+  btn.style.cursor   = hasInput ? 'pointer'    : 'not-allowed';
 }
 
 function disableSubmitButtons() {
-  var submitBtn  = document.getElementById('submitBtn');
-  var dismissBtn = document.getElementById('dismissBtn');
-  var inputs     = document.querySelectorAll('#logClientName, #logRemarks');
-  inputs.forEach(function(el) { el.disabled = true; });
+  if (!pendingLog || !pendingLog._uid) return;
+  var uid = pendingLog._uid;
+  var submitBtn  = document.getElementById(uid + '_submit');
+  var dismissBtn = document.getElementById(uid + '_dismiss');
+  var clientEl   = document.getElementById(uid + '_client');
+  var remarksEl  = document.getElementById(uid + '_remarks');
+  if (clientEl)  clientEl.disabled  = true;
+  if (remarksEl) remarksEl.disabled = true;
   if (submitBtn)  { submitBtn.disabled  = true; submitBtn.style.opacity  = '0.4'; submitBtn.style.cursor  = 'not-allowed'; }
   if (dismissBtn) { dismissBtn.disabled = true; dismissBtn.style.opacity = '0.4'; dismissBtn.style.cursor = 'not-allowed'; }
+}
+
+function dismissSubmit(uid) {
+  disableSubmitButtons();
+  pendingLog = null;
+  addMsg('bot', "No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
 }
 
 function submitUnanswered() {
   if (!pendingLog) return;
   var clientName = (pendingLog.clientName || '').trim();
   var remarks    = (pendingLog.remarks    || '').trim();
-  if (!clientName && !remarks) return; // guard: Submit should be disabled anyway
+  if (!clientName && !remarks) return;
 
   disableSubmitButtons();
 
