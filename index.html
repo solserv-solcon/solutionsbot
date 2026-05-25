@@ -287,7 +287,7 @@ function showSubmitPrompt(question) {
     "<input id='logClientName' type='text' placeholder='Client name (optional)' " +
     "oninput=\"if(window.pendingLog)pendingLog.clientName=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, details about the policy...' " +
+    "<input id='logRemarks' type='text' placeholder='Remarks — e.g. needed by Friday, urgent...' " +
     "oninput=\"if(window.pendingLog)pendingLog.remarks=this.value\" " +
     "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
     "</div>" +
@@ -853,7 +853,16 @@ function sendMessage() {
       ctx.pendingPayload = null;
     }
 
-    // 3. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
+    // 3. Recommendation follow-up — user already got a policy list and now asks for recommendations
+    if (detectRecommendationIntent(q) && ctx.lastTab) {
+      ctx.showRecommendations = true;
+      var footer = '<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+      addMsg('bot', buildPolicyList(ctx.lastTab, true) + footer);
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+
+    // 4. Policy list intent — check BEFORE tab switch so "unsupported policies for payroll" works
     if (detectPolicyListIntent(q)) {
       ctx.lastTopic = q;
       ctx.showRecommendations = detectRecommendationIntent(q);
@@ -877,7 +886,7 @@ function sendMessage() {
       return;
     }
 
-    // 4. Follow-up tab switch: "what about payroll?" after a previous answer
+    // 5. Follow-up tab switch: "what about payroll?" after a previous answer
     var switchTab = detectTabSwitch(q);
     if (switchTab && (ctx.lastTab || ctx.lastResults.length)) {
       ctx.pendingAction = ctx.lastResults.length ? 'search' : 'policyList';
@@ -887,7 +896,7 @@ function sendMessage() {
       return;
     }
 
-    // 5. Regular KB search
+    // 6. Regular KB search
     var results = search(q);
     ctx.lastResults = results;
     ctx.lastTopic = q;
