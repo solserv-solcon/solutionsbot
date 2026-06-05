@@ -1,29 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Solutions Services Knowledge Base</title>
+<title>Athena – Solutions Services KB</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316a34a'/><text y='.9em' font-size='70' x='12'>🗂️</text></svg>"/>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
+/* ── CSS Variables ── */
+:root {
+  --bg:       #f0f4f8;
+  --surface:  #ffffff;
+  --surface2: #f8fafc;
+  --border:   #e2e8f0;
+  --border2:  #cbd5e1;
+  --text:     #1e293b;
+  --text2:    #475569;
+  --text3:    #64748b;
+  --text4:    #94a3b8;
+  --bub-bot:  #f1f5f9;
+  --input-bg: #f1f5f9;
+  --input-dis:#94a3b8;
+  --shadow1:  rgba(0,0,0,.06);
+  --shadow2:  rgba(0,0,0,.07);
+  --card-bg:  #f8fafc;
+}
+[data-theme="dark"] {
+  --bg:       #0f172a;
+  --surface:  #1e293b;
+  --surface2: #273549;
+  --border:   #334155;
+  --border2:  #475569;
+  --text:     #f1f5f9;
+  --text2:    #cbd5e1;
+  --text3:    #94a3b8;
+  --text4:    #64748b;
+  --bub-bot:  #273549;
+  --input-bg: #273549;
+  --input-dis:#475569;
+  --shadow1:  rgba(0,0,0,.25);
+  --shadow2:  rgba(0,0,0,.3);
+  --card-bg:  #273549;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; transition: background .2s; }
 .app { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 14px; }
+
 header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; border-radius: 16px; padding: 18px 24px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 16px rgba(22,163,74,.2); }
 .hico { width: 46px; height: 46px; background: rgba(255,255,255,.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 .htxt h1 { font-size: 1.1rem; font-weight: 700; }
 .htxt p { font-size: .74rem; opacity: .82; margin-top: 2px; }
-.hbtns { margin-left: auto; display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.hbtns { margin-left: auto; display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
 .hbtn { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); color: white; border-radius: 7px; padding: 5px 12px; font-size: .74rem; cursor: pointer; transition: background .15s; white-space: nowrap; }
 .hbtn:hover { background: rgba(255,255,255,.26); }
-.sbar { background: white; border-radius: 10px; padding: 9px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.06); display: flex; align-items: center; gap: 8px; font-size: .76rem; color: #64748b; }
+
+/* Dark mode toggle */
+.theme-btn { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); color: white; border-radius: 20px; padding: 5px 12px; font-size: .74rem; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background .15s; white-space: nowrap; }
+.theme-btn:hover { background: rgba(255,255,255,.26); }
+
+/* Header user info */
+.user-info { display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:4px 10px 4px 5px; }
+.user-avatar { width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);object-fit:cover;flex-shrink:0; }
+.user-name { font-size:.74rem;color:white;opacity:.95;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.sign-out-btn { background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:white;border-radius:6px;padding:3px 8px;font-size:.7rem;cursor:pointer;white-space:nowrap; }
+.sign-out-btn:hover { background:rgba(255,255,255,.28); }
+
+.sbar { background: var(--surface); border-radius: 10px; padding: 9px 16px; box-shadow: 0 1px 4px var(--shadow1); display: flex; align-items: center; gap: 8px; font-size: .76rem; color: var(--text3); transition: background .2s; }
 .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .dot.green { background: #22c55e; }
 .dot.amber { background: #f59e0b; animation: bl 1s infinite; }
 .dot.red { background: #ef4444; }
 @keyframes bl { 0%,100%{opacity:1} 50%{opacity:.35} }
-.chat-wrap { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.07); display: flex; flex-direction: column; overflow: hidden; }
+
+.chat-wrap { background: var(--surface); border-radius: 16px; box-shadow: 0 2px 8px var(--shadow2); display: flex; flex-direction: column; overflow: hidden; transition: background .2s; }
 .messages { overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 11px; scroll-behavior: smooth; min-height: 460px; max-height: 540px; }
 .msg { display: flex; gap: 9px; max-width: 92%; animation: fi .22s ease; }
 @keyframes fi { from{opacity:0;transform:translateY(5px)} to{opacity:1} }
@@ -31,75 +81,82 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
 .msg.bot { align-self: flex-start; }
 .av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
 .bot .av { background: linear-gradient(135deg, #14532d, #16a34a); }
-.user .av { background: #e2e8f0; }
+.user .av { background: var(--border); }
 .bub { padding: 10px 14px; border-radius: 13px; font-size: .875rem; line-height: 1.7; max-width: 100%; }
-.bot .bub { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 3px; }
+.bot .bub { background: var(--bub-bot); color: var(--text); border-bottom-left-radius: 3px; }
 .user .bub { background: linear-gradient(135deg, #14532d, #16a34a); color: white; border-bottom-right-radius: 3px; }
+
 .typing { display: flex; gap: 4px; align-items: center; padding: 3px 0; }
-.typing span { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; animation: bo 1.2s infinite; }
+.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--text4); animation: bo 1.2s infinite; }
 .typing span:nth-child(2) { animation-delay: .2s; }
 .typing span:nth-child(3) { animation-delay: .4s; }
 @keyframes bo { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-top: 1px solid #f1f5f9; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-top: 1px solid var(--border); }
 .chip { background: #f0fdf4; border: 1px solid #86efac; color: #15803d; border-radius: 18px; padding: 5px 12px; font-size: .75rem; cursor: pointer; transition: all .15s; white-space: nowrap; }
 .chip:hover { background: #dcfce7; }
-.input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #f1f5f9; background: #fafafa; }
-.input-row input { flex: 1; border: 1px solid #cbd5e1; border-radius: 9px; padding: 9px 13px; font-size: .875rem; outline: none; font-family: inherit; color: #1e293b; }
+[data-theme="dark"] .chip { background: #14532d; border-color: #166534; color: #86efac; }
+[data-theme="dark"] .chip:hover { background: #166534; }
+
+.input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface2); }
+.input-row input { flex: 1; border: 1px solid var(--border2); border-radius: 9px; padding: 9px 13px; font-size: .875rem; outline: none; font-family: inherit; color: var(--text); background: var(--surface); }
 .input-row input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.15); }
-.input-row input:disabled { background: #f1f5f9; color: #94a3b8; }
+.input-row input:disabled { background: var(--input-bg); color: var(--input-dis); }
 .send { background: linear-gradient(135deg, #14532d, #16a34a); color: white; border: none; border-radius: 9px; width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
 .send:disabled { opacity: .4; cursor: not-allowed; }
 .send:hover:not(:disabled) { opacity: .85; }
-.notice { text-align: center; font-size: .72rem; color: #94a3b8; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-.result-card { background: #f8fafc; border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
-#cpOverlay, #cpPanel { position: fixed !important; }
+
+.notice { text-align: center; font-size: .72rem; color: var(--text4); padding: 8px; background: var(--surface); border-radius: 10px; box-shadow: 0 1px 4px var(--shadow1); transition: background .2s; }
+.result-card { background: var(--card-bg); border-left: 3px solid #16a34a; border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 10px; }
+.policy-group { margin-bottom: 14px; }
+.policy-group-title { font-weight: 700; font-size: .82rem; color: #15803d; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.policy-item { font-size: .82rem; color: var(--text); padding: 6px 0 6px 14px; border-left: 2px solid #d1fae5; margin-bottom: 6px; line-height: 1.5; }
+
 /* Login overlay */
 #loginOverlay { position:fixed;inset:0;z-index:10000;background:linear-gradient(135deg,#0f2d1a,#14532d,#166534);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px; }
 .login-card { background:white;border-radius:20px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;max-width:380px;text-align:center; }
 .login-logo { width:60px;height:60px;background:linear-gradient(135deg,#14532d,#16a34a);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px; }
-/* Header user info */
-.user-info { display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:4px 10px 4px 5px; }
-.user-avatar { width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);object-fit:cover;flex-shrink:0; }
-.user-name { font-size:.74rem;color:white;opacity:.95;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-.sign-out-btn { background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:white;border-radius:6px;padding:3px 8px;font-size:.7rem;cursor:pointer;white-space:nowrap; }
-.sign-out-btn:hover { background:rgba(255,255,255,.28); }
+
+/* Fixed panels */
+#cpOverlay, #cpPanel { position: fixed !important; }
 </style>
 </head>
 <body>
 
-<!-- Google One Tap login overlay -->
+<!-- Login overlay -->
 <div id="loginOverlay">
   <div class="login-card">
     <div class="login-logo">&#128202;</div>
-    <div style="font-size:1.2rem;font-weight:700;color:#0f172a;">Solutions Services KB</div>
-    <div style="font-size:.82rem;color:#64748b;line-height:1.5;">Sign in with your Google account to access the knowledge base.</div>
+    <div style="font-size:1.3rem;font-weight:800;color:#0f172a;">Athena</div>
+    <div style="font-size:.82rem;color:#64748b;line-height:1.5;">Sign in with your Google account to access the Solutions Services knowledge base.</div>
     <hr style="width:100%;border:none;border-top:1px solid #e2e8f0;margin:4px 0;"/>
     <div id="googleSignInBtn" style="min-height:44px;display:flex;align-items:center;justify-content:center;"></div>
     <div id="loginStatus" style="font-size:.76rem;color:#94a3b8;min-height:18px;">Waiting for sign-in...</div>
   </div>
 </div>
-<!-- Login overlay -->
+
+<!-- Contact Us panel -->
 <div id="cpOverlay" onclick="closeContact()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;"></div>
-<div id="cpPanel" style="display:none;position:fixed;top:0;right:0;height:100%;width:min(390px,100%);background:#fff;z-index:9999;box-shadow:-6px 0 32px rgba(0,0,0,.18);flex-direction:column;transform:translateX(100%);transition:transform .3s ease;">
+<div id="cpPanel" style="display:none;position:fixed;top:0;right:0;height:100%;width:min(390px,100%);z-index:9999;box-shadow:-6px 0 32px rgba(0,0,0,.18);flex-direction:column;transform:translateX(100%);transition:transform .3s ease;">
   <div style="background:linear-gradient(135deg,#14532d,#16a34a);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
     <div><div style="color:#fff;font-weight:700;font-size:1.05rem;">&#9993; Contact Us</div><div style="color:rgba(255,255,255,.78);font-size:.75rem;margin-top:3px;">Send a message to Solutions Services</div></div>
     <button onclick="closeContact()" style="background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px;">
-    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Your Name</label><input id="cpName" type="text" readonly style="width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;background:#f8fafc;color:#64748b;box-sizing:border-box;outline:none;"/></div>
-    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Client Name <span style="color:#94a3b8;font-weight:400;">(optional)</span></label><input id="cpClient" type="text" placeholder="e.g. ABC Corporation" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"/></div>
-    <div><label style="font-size:.78rem;font-weight:600;color:#475569;display:block;margin-bottom:6px;">Concern <span style="color:#dc2626;">*</span></label><textarea id="cpConcern" rows="6" placeholder="Describe your concern in detail..." oninput="updateCpBtn()" style="width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;line-height:1.6;" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#cbd5e1'"></textarea></div>
+  <div id="cpBody" style="flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px;background:var(--surface);">
+    <div><label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">Your Name</label><input id="cpName" type="text" readonly style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;background:var(--surface2);color:var(--text3);box-sizing:border-box;outline:none;"/></div>
+    <div><label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">Client Name <span style="color:var(--text4);font-weight:400;">(optional)</span></label><input id="cpClient" type="text" placeholder="e.g. ABC Corporation" style="width:100%;border:1.5px solid var(--border2);border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;box-sizing:border-box;outline:none;background:var(--surface);color:var(--text);" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='var(--border2)'"/></div>
+    <div><label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:6px;">Concern <span style="color:#dc2626;">*</span></label><textarea id="cpConcern" rows="6" placeholder="Describe your concern in detail..." oninput="updateCpBtn()" style="width:100%;border:1.5px solid var(--border2);border-radius:9px;padding:10px 13px;font-size:.84rem;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;line-height:1.6;background:var(--surface);color:var(--text);" onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='var(--border2)'"></textarea></div>
     <div id="cpStatus" style="display:none;font-size:.78rem;padding:10px 13px;border-radius:9px;"></div>
   </div>
-  <div style="padding:16px 22px;border-top:1px solid #f1f5f9;flex-shrink:0;"><button id="cpSendBtn" onclick="sendContact()" disabled style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:12px;font-size:.88rem;font-weight:700;font-family:inherit;opacity:.4;cursor:not-allowed;transition:all .15s;">&#9993; Send Message</button></div>
+  <div style="padding:16px 22px;border-top:1px solid var(--border);flex-shrink:0;background:var(--surface);"><button id="cpSendBtn" onclick="sendContact()" disabled style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:12px;font-size:.88rem;font-weight:700;font-family:inherit;opacity:.4;cursor:not-allowed;transition:all .15s;">&#9993; Send Message</button></div>
 </div>
 
 <div class="app">
   <header>
     <div class="hico">&#128202;</div>
     <div class="htxt">
-      <h1>Solutions Services Knowledge Base</h1>
-      <p>Ask anything about policies, procedures, and resolutions</p>
+      <h1>Athena</h1>
+      <p>Solutions Services Knowledge Base</p>
     </div>
     <div class="hbtns">
       <div class="user-info" id="userInfo" style="display:none">
@@ -107,6 +164,7 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
         <span class="user-name" id="userName"></span>
         <button class="sign-out-btn" onclick="signOut()">Sign out</button>
       </div>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">&#127769; Dark</button>
       <button class="hbtn" onclick="loadSheet()">&#128260; Refresh</button>
       <button class="hbtn" onclick="openContact()">&#9993; Contact Us</button>
     </div>
@@ -133,14 +191,30 @@ header { background: linear-gradient(135deg, #14532d, #16a34a); color: white; bo
       <button class="send" id="sendBtn" onclick="sendMessage()" disabled>&#9658;</button>
     </div>
   </div>
-  <div class="notice">No API needed &nbsp;&#183;&nbsp; Live data from your Google Sheet &nbsp;&#183;&nbsp; 100% free &nbsp;&#183;&nbsp; Always up to date</div>
+  <div class="notice">Athena &nbsp;&#183;&nbsp; Powered by Solutions Services &nbsp;&#183;&nbsp; Live data from Google Sheet</div>
 </div>
 
 <script>
 var CLIENT_ID   = '290605770559-71f1javvjokljbjh9oe1bn3tq7g6tnin.apps.googleusercontent.com';
 var STORAGE_KEY = 'solserv_kb_user';
+var THEME_KEY   = 'solserv_theme';
 var currentUser = null;
 
+// ── Theme ─────────────────────────────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? '&#9728; Light' : '&#127769; Dark';
+  try { sessionStorage.setItem(THEME_KEY, theme); } catch(e) {}
+}
+function toggleTheme() {
+  var cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+// Restore saved theme
+(function(){ try { var t = sessionStorage.getItem(THEME_KEY); if (t) applyTheme(t); } catch(e) {} })();
+
+// ── Google Sign-In ────────────────────────────────────────────────────────────
 function applySignedInUser(user) {
   currentUser = user;
   document.getElementById('loginOverlay').style.display = 'none';
@@ -149,14 +223,9 @@ function applySignedInUser(user) {
   document.getElementById('userInfo').style.display = 'flex';
   loadSheet();
 }
-
 function initGoogleSignIn() {
   if (!window.google || !google.accounts) return;
-  google.accounts.id.initialize({
-    client_id: CLIENT_ID,
-    callback: onGoogleSignIn,
-    auto_select: false
-  });
+  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onGoogleSignIn, auto_select: false });
   google.accounts.id.renderButton(
     document.getElementById('googleSignInBtn'),
     { theme: 'outline', size: 'large', text: 'sign_in_with', width: 300, logo_alignment: 'left' }
@@ -174,28 +243,17 @@ function restoreSession() {
     var saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       var user = JSON.parse(saved);
-      if (user && user.email && user.expires && Date.now() < user.expires) {
-        applySignedInUser(user); return;
-      } else {
-        sessionStorage.removeItem(STORAGE_KEY);
-      }
+      if (user && user.email && user.expires && Date.now() < user.expires) { applySignedInUser(user); return; }
+      else { sessionStorage.removeItem(STORAGE_KEY); }
     }
   } catch(e) {}
-  // No valid session — initialize Google Sign-In button
-  // Try immediately, then wait for GSI script to load
   initGoogleSignIn();
   if (!window.google) {
-    var gsiScript = document.querySelector('script[src*="accounts.google.com"]');
-    if (gsiScript) {
-      gsiScript.addEventListener('load', initGoogleSignIn);
-    } else {
-      // Retry a few times
-      var attempts = 0;
-      var retry = setInterval(function() {
-        if (window.google && google.accounts) { initGoogleSignIn(); clearInterval(retry); }
-        if (++attempts > 20) clearInterval(retry);
-      }, 300);
-    }
+    var attempts = 0;
+    var retry = setInterval(function() {
+      if (window.google && google.accounts) { initGoogleSignIn(); clearInterval(retry); }
+      if (++attempts > 20) clearInterval(retry);
+    }, 300);
   }
 }
 if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', restoreSession); } else { restoreSession(); }
@@ -211,86 +269,68 @@ function signOut() {
   document.getElementById('chips').style.display = 'none';
 }
 
-var SHEET_ID  = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
+var SHEET_ID      = '1zaePGt75NGCiP4-wcUz3_i2P3om1Xrmz0SC1a2EyjyM';
+var LOGGER_URL    = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
+var CONTACT_EMAIL = 'abmanalastas@sprout.ph';
+var SPROUT_GUIDE  = 'https://guide.sprout.ph';
 var entries = [], turnCount = 0;
 
-var ctx = {
-  pendingAction: null, pendingPayload: null, lastTopic: null,
-  lastResults: [], lastTab: null, showRecommendations: false,
-};
+var ctx = { pendingAction:null, pendingPayload:null, lastTopic:null, lastResults:[], lastTab:null, showRecommendations:false };
 
 function detectTabChoice(q) {
-  var l = q.toLowerCase().trim();
-  if (l==='hr'||l==='for hr'||l==='hr only'||l==='sa hr'||l==='yung hr') return 'HR';
-  if (l==='payroll'||l==='for payroll'||l==='payroll only'||l==='sa payroll'||l==='yung payroll') return 'Payroll';
-  if (l==='both'||l==='both hr and payroll'||l==='for both'||l==='lahat'||l==='all') return 'Both';
-  if (/\bhr\b/.test(l) && !/payroll/.test(l)) return 'HR';
-  if (/payroll/.test(l) && !/\bhr\b/.test(l)) return 'Payroll';
-  if ((/\bhr\b/.test(l) && /payroll/.test(l)) || /both/.test(l)) return 'Both';
+  var l=q.toLowerCase().trim();
+  if(l==='hr'||l==='for hr'||l==='hr only'||l==='sa hr'||l==='yung hr') return 'HR';
+  if(l==='payroll'||l==='for payroll'||l==='payroll only'||l==='sa payroll'||l==='yung payroll') return 'Payroll';
+  if(l==='both'||l==='both hr and payroll'||l==='for both'||l==='lahat'||l==='all') return 'Both';
+  if(/\bhr\b/.test(l)&&!/payroll/.test(l)) return 'HR';
+  if(/payroll/.test(l)&&!/\bhr\b/.test(l)) return 'Payroll';
+  if((/\bhr\b/.test(l)&&/payroll/.test(l))||/both/.test(l)) return 'Both';
   return null;
 }
 function detectTabSwitch(q) {
-  var l = q.toLowerCase();
-  var sp = ['what about','how about','paano naman','for payroll','for hr','now payroll','now hr','payroll naman','hr naman','show payroll','show hr'];
-  return sp.some(function(p){ return l.indexOf(p)!==-1; }) ? detectTabChoice(q) : null;
+  var l=q.toLowerCase();
+  var sp=['what about','how about','paano naman','for payroll','for hr','now payroll','now hr','payroll naman','hr naman','show payroll','show hr'];
+  return sp.some(function(p){return l.indexOf(p)!==-1;}) ? detectTabChoice(q) : null;
 }
 
 var synonyms = {
-  leave:        ['leave','vacation','vl','sl','sick','absent','time off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
-  halfday:      ['half day','half-day','0.5 day','half a day','4 hours leave','4hr leave','4 hour leave'],
-  hourlyleave:  ['hourly leave','hourly','per hour leave','1 hour leave','2 hour leave','3 hour leave','by the hour','fractional leave'],
-  password:     ['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
-  payroll:      ['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip','when is pay','when do we get paid'],
-  wfh:          ['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
+  leave:['leave','vacation','vl','sl','sick','absent','time off','holiday','maternity','paternity','birthday','bereavement','emergency','solo parent','absence','leaves'],
+  halfday:['half day','half-day','0.5 day','half a day','4 hours leave','4hr leave','4 hour leave'],
+  hourlyleave:['hourly leave','hourly','per hour leave','1 hour leave','2 hour leave','3 hour leave','by the hour','fractional leave'],
+  password:['password','locked','login','log in','account','reset','forgot','cant access','cannot access','credentials','lock out','lockout'],
+  payroll:['payroll','salary','pay','wages','compensation','sweldo','cutoff','cut off','payday','pay day','payslip','pay slip'],
+  wfh:['wfh','work from home','remote','hybrid','work arrangement','telecommute','onsite','on site','on-site','office'],
   reimbursement:['reimbursement','reimburse','expense','receipt','claim','expense report'],
-  refund:       ['refund','money back','return payment','cancel subscription','get my money'],
-  it:           ['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support','report issue','report problem'],
-  escalation:   ['escalate','escalation','unresolved','complaint','not resolved','follow up'],
-  privacy:      ['data privacy','privacy','personal data','customer data','data breach','confidential','data handling'],
-  thirteenth:   ['13th month','thirteenth month','christmas bonus','bonus','13th'],
-  balance:      ['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
-  leavetypes:   ['types of leave','kinds of leave','what leave','leave available','leave entitlement','what are the leaves'],
-  nightdiff:    ['night diff','nd','night differential','night shift differential','graveyard','late shift'],
-  overtime:     ['ot','overtime','extra hours','work beyond','beyond regular hours'],
-  graceperiod:  ['grace period','grace','late','tardiness','tardy','lateness'],
-  costcenter:   ['cost center','cost centre','department cost','budget center'],
-  audittrail:   ['audit trail','audit log','activity log','change log','history log','who changed','track changes'],
-  brokenshift:  ['broken shift','split shift','split schedule','divided shift'],
-  subdept:      ['sub department','sub-department','child department','department under'],
+  it:['it issue','system','computer','software','hardware','network','ticket','helpdesk','help desk','technical','tech support'],
+  escalation:['escalate','escalation','unresolved','complaint','not resolved','follow up'],
+  privacy:['data privacy','privacy','personal data','customer data','data breach','confidential'],
+  thirteenth:['13th month','thirteenth month','christmas bonus','bonus','13th'],
+  balance:['balance','remaining leave','leave credits','how many leaves','leave balance','check leave'],
+  leavetypes:['types of leave','kinds of leave','what leave','leave available','leave entitlement'],
+  nightdiff:['night diff','nd','night differential','night shift differential','graveyard','late shift'],
+  overtime:['ot','overtime','extra hours','work beyond','beyond regular hours'],
+  graceperiod:['grace period','grace','late','tardiness','tardy','lateness'],
+  costcenter:['cost center','cost centre','department cost','budget center'],
+  audittrail:['audit trail','audit log','activity log','change log','history log','who changed','track changes'],
+  brokenshift:['broken shift','split shift','split schedule','divided shift'],
+  subdept:['sub department','sub-department','child department','department under'],
 };
 
-var greetings  = ['hi','hello','hey','good morning','good afternoon','good evening','sup','yo','kumusta','kamusta','hi there','hello there'];
-var thanks     = ['thank','thanks','thank you','salamat','ty','thx','noted','got it','okay thanks','ok thanks','much appreciated','appreciate'];
-var howAreYou  = ['how are you','how r you','kamusta ka','are you okay','you good','how are u'];
+var greetings=['hi','hello','hey','good morning','good afternoon','good evening','sup','yo','kumusta','kamusta','hi there','hello there'];
+var thanks=['thank','thanks','thank you','salamat','ty','thx','noted','got it','okay thanks','ok thanks','much appreciated','appreciate'];
+var howAreYou=['how are you','how r you','kamusta ka','are you okay','you good','how are u'];
+var openers=['Sure! Here is what I found:','Great question! Here are the details:','Happy to help! Here is the information:','Found it! Here is what you need to know:','Of course! Here is the resolution:','Here you go! This should help:'];
+var multiOpeners=['I found a few relevant entries for you:','There are a couple of things related to your question:','Here are the most relevant results I found:'];
+var notFound=["Hmm, I couldn't find an answer to that one!","I don't have that one in my knowledge base yet!","That one's not in my data yet!"];
+var policyListTriggers=['unsupported','not supported','partially supported','partial support','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','all items','list items','show items','what items','what modules','all modules','list modules'];
+var recommendationTriggers=['recommendation','recommendations','recommended','resolution','resolutions','with recommendation','include recommendation','show recommendation','and recommendation','with details','include details','show details','with resolution','include resolution','show resolution','and resolution'];
 
-var openers = [
-  'Sure! Here is what I found:',
-  'Great question! Here are the details:',
-  'Happy to help! Here is the information:',
-  'Found it! Here is what you need to know:',
-  'Of course! Here is the resolution:',
-  'Here you go! This should help:',
-];
-var multiOpeners = [
-  'I found a few relevant entries for you:',
-  'There are a couple of things related to your question:',
-  'Here are the most relevant results I found:',
-];
-var notFound = [
-  "Hmm, I couldn't find an answer to that one!",
-  "I don't have that one in my knowledge base yet!",
-  "That one's not in my data yet!",
-];
+function detectPolicyListIntent(q){var l=q.toLowerCase();return policyListTriggers.some(function(t){return l.indexOf(t)!==-1;});}
+function detectRecommendationIntent(q){var l=q.toLowerCase();return recommendationTriggers.some(function(t){return l.indexOf(t)!==-1;});}
 
-var policyListTriggers = ['unsupported','not supported','partially supported','partial support','all policies','list all','show all','what are all','what policies','which policies','unsupported policies','partial policies','all items','list items','show items','what items','what modules','all modules','list modules'];
-var recommendationTriggers = ['recommendation','recommendations','recommended','resolution','resolutions','with recommendation','include recommendation','show recommendation','and recommendation','with details','include details','show details','with resolution','include resolution','show resolution','and resolution'];
-
-function detectPolicyListIntent(q){ var l=q.toLowerCase(); return policyListTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
-function detectRecommendationIntent(q){ var l=q.toLowerCase(); return recommendationTriggers.some(function(t){return l.indexOf(t)!==-1;}); }
-
-function buildPolicyList(tab, showRec) {
-  var filtered = entries.filter(function(e){ return tab==='Both'||e.tab===tab; });
-  if (!filtered.length) return 'I didn\'t find any entries for <strong>'+tab+'</strong>. Try refreshing!';
+function buildPolicyList(tab,showRec){
+  var filtered=entries.filter(function(e){return tab==='Both'||e.tab===tab;});
+  if(!filtered.length) return 'I didn\'t find any entries for <strong>'+tab+'</strong>. Try refreshing!';
   var buckets={HR:{},Payroll:{}};
   filtered.forEach(function(e){
     var gk=(e.module&&e.module.length)?e.module:(e.tab==='HR'?'HR':'Payroll');
@@ -304,7 +344,7 @@ function buildPolicyList(tab, showRec) {
     var bk=buckets[t];
     var keys=Object.keys(bk).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase());});
     if(!keys.length)return;
-    var tc=t==='HR'?'#15803d':'#1d4ed8', tb=t==='HR'?'#dcfce7':'#dbeafe';
+    var tc=t==='HR'?'#15803d':'#1d4ed8',tb=t==='HR'?'#dcfce7':'#dbeafe';
     h+='<div style="font-size:.8rem;font-weight:700;color:'+tc+';background:'+tb+';padding:5px 12px;border-radius:7px;margin-bottom:8px;margin-top:4px;">'+(t==='HR'?'&#129333; HR Policies':'&#128181; Payroll Policies')+'</div>';
     keys.forEach(function(gk){
       var items=bk[gk];
@@ -312,23 +352,23 @@ function buildPolicyList(tab, showRec) {
       total+=items.length;
       h+='<div class="policy-group"><div class="policy-group-title">&#128193; '+esc(gk)+'</div>';
       items.forEach(function(e){
-        if(showRec){h+='<div class="policy-item"><div style="font-weight:600;color:#1e293b;">'+esc(e.item||e.requirement)+'</div><div style="font-size:.78rem;color:#475569;margin-top:3px;line-height:1.5;">'+esc(e.resolution)+'</div></div>';}
+        if(showRec){h+='<div class="policy-item"><div style="font-weight:600;">'+esc(e.item||e.requirement)+'</div><div style="font-size:.78rem;color:var(--text2);margin-top:3px;line-height:1.5;">'+esc(e.resolution)+'</div></div>';}
         else{h+='<div class="policy-item">'+esc(e.item||e.requirement)+'</div>';}
       });
       h+='</div>';
     });
   });
-  h+='<div style="font-size:.78rem;color:#64748b;margin-top:6px;">Total: <strong>'+total+'</strong> items found.</div>';
+  h+='<div style="font-size:.78rem;color:var(--text3);margin-top:6px;">Total: <strong>'+total+'</strong> items found.</div>';
   return h;
 }
 
 function tabPrompt(msg){
-  var btnStyle='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;margin:3px;';
+  var s='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;margin:3px;';
   return (msg||'Sure! Which data would you like to check?')+
     '<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;">'+
-    '<button style="'+btnStyle+'" onclick="chooseTab(\'HR\')">&#129333; HR</button>'+
-    '<button style="'+btnStyle+'" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>'+
-    '<button style="'+btnStyle+'" onclick="chooseTab(\'Both\')">&#128203; Both</button>'+
+    '<button style="'+s+'" onclick="chooseTab(\'HR\')">&#129333; HR</button>'+
+    '<button style="'+s+'" onclick="chooseTab(\'Payroll\')">&#128181; Payroll</button>'+
+    '<button style="'+s+'" onclick="chooseTab(\'Both\')">&#128203; Both</button>'+
     '</div>';
 }
 function chooseTab(tab){addMsg('user',tab);respondToTab(tab);}
@@ -339,252 +379,144 @@ function respondToTab(tab){
     var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
     var reply;
     if(ctx.pendingAction==='policyList') reply=buildPolicyList(tab,ctx.showRecommendations);
-    else if(ctx.pendingAction==='search'&&ctx.pendingPayload){ var f=ctx.pendingPayload.filter(function(e){return tab==='Both'||e.tab===tab;}); reply=buildReply(f.length?f:[]); }
+    else if(ctx.pendingAction==='search'&&ctx.pendingPayload){var f=ctx.pendingPayload.filter(function(e){return tab==='Both'||e.tab===tab;});reply=buildReply(f.length?f:[]);}
     else reply=buildPolicyList(tab);
-    ctx.pendingAction=null; ctx.pendingPayload=null;
+    ctx.pendingAction=null;ctx.pendingPayload=null;
     addMsg('bot',reply+footer);
   },500);
 }
 
-function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-function openSheet() { window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit', '_blank'); }
-
-// Auto-detect URLs and emails and make them clickable
-function linkify(text) {
-  // Escape HTML first
-  text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // Make URLs clickable
-  text = text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:#15803d;text-decoration:underline;">$1</a>');
-  // Make emails clickable
-  text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1" style="color:#15803d;text-decoration:underline;">$1</a>');
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function linkify(text){
+  text=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  text=text.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" style="color:#15803d;text-decoration:underline;">$1</a>');
+  text=text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g,'<a href="mailto:$1" style="color:#15803d;text-decoration:underline;">$1</a>');
   return text;
 }
 
-function loadSheet() {
+function loadSheet(){
   setSt('amber','Loading from Google Sheet...');
-  document.getElementById('chatInput').disabled = true;
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('chips').style.display = 'none';
-
-  // Fetch both tabs simultaneously
-  var hrUrl      = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=HR';
-  var payrollUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Payroll';
-
-  Promise.all([fetch(hrUrl), fetch(payrollUrl)])
-    .then(function(responses) {
-      return Promise.all(responses.map(function(r) {
-        if (!r.ok) throw new Error('Could not read sheet. Make sure it is shared as Anyone with the link.');
-        return r.text();
-      }));
+  document.getElementById('chatInput').disabled=true;
+  document.getElementById('sendBtn').disabled=true;
+  document.getElementById('chips').style.display='none';
+  var hrUrl='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=HR';
+  var prUrl='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=Payroll';
+  Promise.all([fetch(hrUrl),fetch(prUrl)])
+    .then(function(rs){return Promise.all(rs.map(function(r){if(!r.ok)throw new Error('Could not read sheet.');return r.text();}));})
+    .then(function(csvs){
+      if(csvs[0].includes('<!DOCTYPE'))throw new Error('Sheet is not public. Set sharing to Anyone with the link - Viewer.');
+      entries=parseHR(csvs[0]).concat(parsePayroll(csvs[1]));
+      if(!entries.length)throw new Error('No data found. Check that tabs are named HR and Payroll.');
+      turnCount=0;
+      setSt('green',entries.length+' entries loaded - '+new Date().toLocaleTimeString());
+      setWelcome('Hi there! &#128075; Welcome to <strong>Athena</strong>, your Solutions Services Knowledge Base assistant! I\'m here to help you find answers about HR policies, payroll, and more.<br><br>Just type your question or choose a topic below to get started!');
+      document.getElementById('chatInput').disabled=false;
+      document.getElementById('chatInput').placeholder='Ask Athena anything...';
+      document.getElementById('sendBtn').disabled=false;
+      document.getElementById('chips').style.display='flex';
     })
-    .then(function(csvs) {
-      var hrCSV      = csvs[0];
-      var payrollCSV = csvs[1];
-
-      if (hrCSV.includes('<!DOCTYPE') || hrCSV.includes('<html')) {
-        throw new Error('Sheet is not public. Set sharing to Anyone with the link - Viewer.');
-      }
-
-      // Parse HR tab: Module = requirement, Item = details, Recommendation = resolution
-      var hrEntries      = parseHR(hrCSV);
-      // Parse Payroll tab: Item = requirement, Recommendation = resolution
-      var payrollEntries = parsePayroll(payrollCSV);
-
-      entries = hrEntries.concat(payrollEntries);
-
-      if (!entries.length) throw new Error('No data found. Check that the tabs are named HR and Payroll.');
-
-      turnCount = 0;
-      setSt('green', entries.length + ' entries loaded - ' + new Date().toLocaleTimeString());
-      setWelcome(
-        'Hi there! &#128075; Welcome to the <strong>Solutions Services Knowledge Base</strong>! ' +
-        'I\'m here to help you find answers about HR policies, payroll, and more.<br><br>' +
-        'Just type your question or choose a topic below to get started!'
-      );
-      document.getElementById('chatInput').disabled = false;
-      document.getElementById('chatInput').placeholder = 'Type your question here...';
-      document.getElementById('sendBtn').disabled = false;
-      document.getElementById('chips').style.display = 'flex';
-    })
-    .catch(function(e) {
-      setSt('red','Could not load');
-      setWelcome('Could not load the Google Sheet.<br><br><strong>Error:</strong> ' + e.message + '<br><br>Make sure sharing is set to <strong>Anyone with the link &#8594; Viewer</strong> then click <strong>&#128260; Refresh</strong>.');
-    });
+    .catch(function(e){setSt('red','Could not load');setWelcome('Could not load the Google Sheet.<br><br><strong>Error:</strong> '+e.message+'<br><br>Make sure sharing is set to <strong>Anyone with the link &#8594; Viewer</strong> then click <strong>&#128260; Refresh</strong>.');});
 }
 
-// Parse HR tab: Module = requirement, Item = details, Recommendation = resolution
-function parseHR(csv) {
-  var rows = splitCSV(csv);
-  if (!rows.length) return [];
-
-  // Find header row and column indexes
-  var headerIdx = -1, modCol = -1, itemCol = -1, recCol = -1;
-  for (var i = 0; i < Math.min(rows.length, 5); i++) {
-    var joined = rows[i].join('|').toLowerCase();
-    if (joined.indexOf('module') !== -1 || joined.indexOf('recommendation') !== -1) {
-      headerIdx = i;
-      rows[i].forEach(function(h, idx) {
-        var lh = h.toLowerCase().trim();
-        if (lh.indexOf('module') !== -1)         modCol = idx;
-        if (lh.indexOf('item') !== -1)            itemCol = idx;
-        if (lh.indexOf('recommendation') !== -1)  recCol = idx;
-      });
-      break;
+function parseHR(csv){
+  var rows=splitCSV(csv);if(!rows.length)return[];
+  var hi=-1,mc=-1,ic=-1,rc=-1;
+  for(var i=0;i<Math.min(rows.length,5);i++){
+    var j=rows[i].join('|').toLowerCase();
+    if(j.indexOf('module')!==-1||j.indexOf('recommendation')!==-1){
+      hi=i;rows[i].forEach(function(h,idx){var l=h.toLowerCase().trim();if(l.indexOf('module')!==-1)mc=idx;if(l.indexOf('item')!==-1)ic=idx;if(l.indexOf('recommendation')!==-1)rc=idx;});break;
     }
   }
-
-  if (headerIdx === -1 || modCol === -1 || recCol === -1) return [];
-
-  var result = [];
-  for (var r = headerIdx + 1; r < rows.length; r++) {
-    var row  = rows[r];
-    var mod  = (row[modCol]  || '').trim();
-    var item = itemCol >= 0 ? (row[itemCol] || '').trim() : '';
-    var rec  = (row[recCol]  || '').trim();
-    if (mod.length > 2 && rec.length > 2) {
-      // Combine module + item as the requirement for better searching
-      var req = item ? mod + ' — ' + item : mod;
-      result.push({ requirement: req, resolution: rec, notes: '', tab: 'HR', module: mod, item: item });
-    }
+  if(hi===-1||mc===-1||rc===-1)return[];
+  var result=[];
+  for(var r=hi+1;r<rows.length;r++){
+    var row=rows[r],mod=(row[mc]||'').trim(),item=ic>=0?(row[ic]||'').trim():'',rec=(row[rc]||'').trim();
+    if(mod.length>2&&rec.length>2){var req=item?mod+' — '+item:mod;result.push({requirement:req,resolution:rec,notes:'',tab:'HR',module:mod,item:item});}
   }
   return result;
 }
 
-// Parse Payroll tab: Item = requirement, Recommendation = resolution
-function parsePayroll(csv) {
-  var rows = splitCSV(csv);
-  if (!rows.length) return [];
-
-  var headerIdx = -1, itemCol = -1, recCol = -1;
-  for (var i = 0; i < Math.min(rows.length, 5); i++) {
-    var joined = rows[i].join('|').toLowerCase();
-    if (joined.indexOf('item') !== -1 || joined.indexOf('recommendation') !== -1) {
-      headerIdx = i;
-      rows[i].forEach(function(h, idx) {
-        var lh = h.toLowerCase().trim();
-        if (lh.indexOf('item') !== -1)           itemCol = idx;
-        if (lh.indexOf('recommendation') !== -1) recCol  = idx;
-      });
-      break;
+function parsePayroll(csv){
+  var rows=splitCSV(csv);if(!rows.length)return[];
+  var hi=-1,ic=-1,rc=-1;
+  for(var i=0;i<Math.min(rows.length,5);i++){
+    var j=rows[i].join('|').toLowerCase();
+    if(j.indexOf('item')!==-1||j.indexOf('recommendation')!==-1){
+      hi=i;rows[i].forEach(function(h,idx){var l=h.toLowerCase().trim();if(l.indexOf('item')!==-1)ic=idx;if(l.indexOf('recommendation')!==-1)rc=idx;});break;
     }
   }
-
-  if (headerIdx === -1 || itemCol === -1 || recCol === -1) return [];
-
-  var result = [];
-  for (var r = headerIdx + 1; r < rows.length; r++) {
-    var row  = rows[r];
-    var item = (row[itemCol] || '').trim();
-    var rec  = (row[recCol]  || '').trim();
-    if (item.length > 2 && rec.length > 2) {
-      result.push({ requirement: item, resolution: rec, notes: '', tab: 'Payroll', module: '', item: item });
-    }
+  if(hi===-1||ic===-1||rc===-1)return[];
+  var result=[];
+  for(var r=hi+1;r<rows.length;r++){
+    var row=rows[r],item=(row[ic]||'').trim(),rec=(row[rc]||'').trim();
+    if(item.length>2&&rec.length>2)result.push({requirement:item,resolution:rec,notes:'',tab:'Payroll',module:'',item:item});
   }
   return result;
 }
 
-// Split CSV into rows and cells
-function splitCSV(csv) {
-  var rows = [], cur = [], field = '', inQ = false;
-  for (var i = 0; i < csv.length; i++) {
-    var c = csv[i];
-    if (c === '"') { if (inQ && csv[i+1] === '"') { field += '"'; i++; } else inQ = !inQ; }
-    else if (c === ',' && !inQ) { cur.push(field.trim()); field = ''; }
-    else if ((c === '\n' || c === '\r') && !inQ) {
-      if (c === '\r' && csv[i+1] === '\n') i++;
-      cur.push(field.trim()); field = '';
-      if (cur.some(function(v){return v.length > 0;})) rows.push(cur);
-      cur = [];
-    } else field += c;
+function splitCSV(csv){
+  var rows=[],cur=[],field='',inQ=false;
+  for(var i=0;i<csv.length;i++){
+    var c=csv[i];
+    if(c==='"'){if(inQ&&csv[i+1]==='"'){field+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){cur.push(field.trim());field='';}
+    else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&csv[i+1]==='\n')i++;cur.push(field.trim());field='';if(cur.some(function(v){return v.length>0;}))rows.push(cur);cur=[];}
+    else field+=c;
   }
-  if (field || cur.length) rows.push(cur.concat([field.trim()]));
+  if(field||cur.length)rows.push(cur.concat([field.trim()]));
   return rows;
 }
 
-function tokenize(t){ return t.toLowerCase().replace(/[^\w\s]/g,' ').split(/\s+/).filter(function(w){return w.length>1;}); }
+var STOPWORDS={do:1,we:1,have:1,is:1,are:1,there:1,any:1,what:1,whats:1,the:1,a:1,an:1,for:1,of:1,in:1,on:1,at:1,to:1,our:1,can:1,could:1,how:1,why:1,when:1,who:1,which:1,where:1,it:1,its:1,that:1,this:1,about:1,please:1,tell:1,me:1,show:1,give:1,find:1,get:1,need:1,want:1,check:1,also:1,just:1,really:1,actually:1,something:1,ba:1,po:1,ako:1,yung:1,ang:1,ng:1,sa:1,na:1,may:1,mag:1,ano:1,paano:1,pwede:1,pede:1,namin:1,natin:1};
 
+function tokenize(t){return t.toLowerCase().replace(/[^\w\s]/g,' ').split(/\s+/).filter(function(w){return w.length>1&&!STOPWORDS[w];});}
 function expand(tokens){
   var ex=tokens.slice(),joined=tokens.join(' ');
-  Object.keys(synonyms).forEach(function(k){
-    var v=synonyms[k];
-    if(v.some(function(s){return joined.indexOf(s)!==-1;})||tokens.some(function(t){return v.indexOf(t)!==-1;}))
-      ex=ex.concat(v);
-  });
+  Object.keys(synonyms).forEach(function(k){var v=synonyms[k];if(v.some(function(s){return joined.indexOf(s)!==-1;})||tokens.some(function(t){return v.indexOf(t)!==-1;}))ex=ex.concat(v);});
   return ex;
 }
 
-function score(entry,tokens){
-  var req=entry.requirement.toLowerCase(),res=entry.resolution.toLowerCase(),notes=entry.notes.toLowerCase();
-  var s=0,phrase=tokens.join(' ');
-  if(req.indexOf(phrase)!==-1) s+=30;
-  tokens.forEach(function(t){
-    if(t.length<2)return;
-    if(req.indexOf(t)!==-1)s+=15;
-    if(res.indexOf(t)!==-1)s+=6;
-    if(notes.indexOf(t)!==-1)s+=4;
-    var stem=t.replace(/(ing|ed|tion|tions|s|ly)$/,'');
-    if(stem.length>3){if(req.indexOf(stem)!==-1)s+=8;if(res.indexOf(stem)!==-1)s+=3;}
-  });
-  return s;
-}
-
 function search(q){
-  var tokens = tokenize(q);
-  if (!tokens.length) return [];
-
-  var scored = entries.map(function(e) {
-    var req = e.requirement.toLowerCase();
-    var s   = 0;
-
-    // Highest priority: exact full phrase match in requirement
-    var phrase = tokens.join(' ');
-    if (req === phrase) s += 100;
-    else if (req.indexOf(phrase) !== -1) s += 60;
-
-    // Each token must appear in the requirement to count
-    var allInReq = tokens.every(function(t) { return req.indexOf(t) !== -1; });
-    if (allInReq && tokens.length >= 2) s += 40;
-    else if (allInReq && tokens.length === 1) s += 20;
-
-    // Partial: count how many tokens match in requirement
-    var matchCount = tokens.filter(function(t) { return t.length > 2 && req.indexOf(t) !== -1; }).length;
-    s += matchCount * 10;
-
-    // Penalize if match ratio is low (matched few of many tokens)
-    var ratio = matchCount / tokens.length;
-    if (ratio < 0.5) s = Math.floor(s * 0.3);
-
-    return { entry: e, score: s };
-  })
-  .filter(function(s) { return s.score >= 30; })
-  .sort(function(a, b) { return b.score - a.score; });
-
-  if (!scored.length) return [];
-
-  // Only return top result if it is clearly better than second
-  if (scored.length > 1 && scored[0].score < scored[1].score * 1.5) {
-    // Too close — not confident enough
-    return [];
-  }
-
-  return [scored[0].entry];
+  var keywords=tokenize(q);if(!keywords.length)return[];
+  var expanded=expand(keywords);
+  var scored=entries.map(function(e){
+    var req=e.requirement.toLowerCase(),res=e.resolution.toLowerCase(),mod=(e.module||'').toLowerCase(),item=(e.item||'').toLowerCase(),s=0;
+    var phrase=keywords.join(' ');
+    if(req===phrase)s+=120;else if(req.indexOf(phrase)!==-1)s+=80;
+    var air=keywords.every(function(t){return req.indexOf(t)!==-1;});
+    if(air&&keywords.length>=2)s+=60;else if(air)s+=40;
+    keywords.forEach(function(t){
+      if(t.length<2)return;
+      var mf=t.length<=3?function(f){return new RegExp('\\b'+t+'\\b').test(f);}:function(f){return f.indexOf(t)!==-1;};
+      var hi=mf(item),hm=mf(mod),hr=mf(req),hres=mf(res);
+      if(hi)s+=20;if(hm)s+=12;if(hr)s+=15;if(hres)s+=5;
+      if(!hi&&!hm&&!hr){var stem=t.replace(/(ing|ed|tion|tions|ies|ied|ly|s)$/,'');if(stem.length>3&&stem!==t){if(item.indexOf(stem)!==-1)s+=12;if(mod.indexOf(stem)!==-1)s+=7;if(req.indexOf(stem)!==-1)s+=10;if(res.indexOf(stem)!==-1)s+=4;}}
+    });
+    expanded.forEach(function(t){if(t.length>2){if(item.indexOf(t)!==-1)s+=10;if(mod.indexOf(t)!==-1)s+=6;if(req.indexOf(t)!==-1)s+=8;}});
+    var im=keywords.filter(function(t){return mod.indexOf(t)!==-1;}),ii=keywords.filter(function(t){return item.indexOf(t)!==-1;});
+    if(im.length>0&&ii.length>0)s+=40;
+    var rh=keywords.filter(function(t){return t.length>2&&req.indexOf(t)!==-1;}).length;
+    if(keywords.length>=3&&rh/keywords.length<0.4)s=Math.floor(s*0.25);
+    return{entry:e,score:s};
+  }).filter(function(x){return x.score>=15;}).sort(function(a,b){return b.score-a.score;});
+  if(!scored.length)return[];
+  if(scored.length>1&&scored[0].score<scored[1].score*1.2)return[scored[0].entry,scored[1].entry];
+  return[scored[0].entry];
 }
-
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function formatEntry(e){
-  var tabBadge = e.tab ? '<span style="font-size:.7rem;background:' + (e.tab==='HR'?'#dcfce7':'#dbeafe') + ';color:' + (e.tab==='HR'?'#15803d':'#1d4ed8') + ';padding:2px 8px;border-radius:99px;margin-left:6px;font-weight:600;">' + e.tab + '</span>' : '';
-  var h = '<strong>' + esc(e.requirement) + '</strong>' + tabBadge + '<br><br>';
-  h += linkify(e.resolution).replace(/\n/g,'<br>');
-  if(e.notes) h += '<br><br><em style="color:#64748b;font-size:.82rem;">&#128204; ' + linkify(e.notes).replace(/\n/g,' &nbsp;|&nbsp; ') + '</em>';
+  var tb=e.tab?'<span style="font-size:.7rem;background:'+(e.tab==='HR'?'#dcfce7':'#dbeafe')+';color:'+(e.tab==='HR'?'#15803d':'#1d4ed8')+';padding:2px 8px;border-radius:99px;margin-left:6px;font-weight:600;">'+e.tab+'</span>':'';
+  var h='<strong>'+esc(e.requirement)+'</strong>'+tb+'<br><br>';
+  h+=linkify(e.resolution).replace(/\n/g,'<br>');
+  if(e.notes)h+='<br><br><em style="color:var(--text3);font-size:.82rem;">&#128204; '+linkify(e.notes).replace(/\n/g,' &nbsp;|&nbsp; ')+'</em>';
   return h;
 }
 
 function buildReply(results){
   var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-  if(!results.length) return rand(notFound);
-  if(results.length===1) return rand(openers)+'<br><br>'+formatEntry(results[0])+footer;
+  if(!results.length)return rand(notFound);
+  if(results.length===1)return rand(openers)+'<br><br>'+formatEntry(results[0])+footer;
   var h=rand(multiOpeners)+'<br><br>';
   results.forEach(function(r){h+='<div class="result-card">'+formatEntry(r)+'</div>';});
   return h+footer;
@@ -593,203 +525,135 @@ function buildReply(results){
 function smallTalk(q){
   var lower=q.toLowerCase().trim();
   if(greetings.some(function(g){return lower===g||lower.startsWith(g+' ')||lower.startsWith(g+'!');}))
-    return rand(['Hi there! How can I help you today? Ask me about company policies, payroll, IT issues, leaves, and more! &#128522;','Hello! I am your Solutions Knowledge Base assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our company policies or procedures! &#128077;']);
+    return rand(['Hi there! How can I help you today? Ask me about HR policies, payroll, leaves, and more! &#128522;','Hello! I\'m Athena, your Solutions Services KB assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our policies or procedures! &#128077;']);
   if(thanks.some(function(t){return lower.indexOf(t)!==-1;}))
-    return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;','Glad I could help! Feel free to ask more questions anytime. &#128522;']);
+    return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;']);
   if(howAreYou.some(function(h){return lower.indexOf(h)!==-1;}))
-    return rand(['I am doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
+    return rand(['I\'m doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
   var followUps=['tell me more','more info','explain','elaborate','what else','can you elaborate','more details'];
   if(ctx.lastResults.length>0&&followUps.some(function(f){return lower.indexOf(f)!==-1;}))
     return 'Here is more detail on the top result:<br><br>'+formatEntry(ctx.lastResults[0]);
   return null;
 }
 
-var SPROUT_GUIDE = 'https://guide.sprout.ph';
-
-function stripHtml(str) {
-  if (!str) return '';
-  // Decode HTML entities first, then strip tags
-  return str
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-    .replace(/<[^>]*>/g, '')
-    .trim();
+// ── Sprout Guide ──────────────────────────────────────────────────────────────
+function stripHtml(str){
+  if(!str)return'';
+  return str.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/<[^>]*>/g,'').trim();
+}
+function searchSproutGuide(query,callback){
+  fetch(SPROUT_GUIDE+'/_hcms/search?term='+encodeURIComponent(query)+'&limit=3&type=KNOWLEDGE_ARTICLE')
+    .then(function(r){return r.json();})
+    .then(function(data){callback((data.results||[]).map(function(r){return{title:stripHtml(r.title||r.name),url:r.url||(SPROUT_GUIDE+r.slug)};}).filter(function(r){return r.title&&r.url;}));})
+    .catch(function(){callback([]);});
+}
+function buildGuideResults(articles){
+  if(!articles.length)return'';
+  var h='<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">';
+  h+='<div style="font-size:.75rem;color:var(--text3);font-weight:600;margin-bottom:6px;">&#128640; Related articles from <a href="'+SPROUT_GUIDE+'" target="_blank" style="color:#0369a1;text-decoration:underline;">Sprout Guide</a>:</div>';
+  articles.forEach(function(a){h+='<a href="'+a.url+'" target="_blank" style="display:block;margin-bottom:5px;padding:6px 10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:7px;font-size:.8rem;color:#0369a1;text-decoration:none;">&#8599; '+esc(a.title)+'</a>';});
+  h+='</div>';return h;
 }
 
-function searchSproutGuide(query, callback) {
-  var url = SPROUT_GUIDE + '/_hcms/search?term=' + encodeURIComponent(query) + '&limit=3&type=KNOWLEDGE_ARTICLE';
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var results = (data.results || []).map(function(r){
-        return { title: stripHtml(r.title || r.name), url: r.url || (SPROUT_GUIDE + r.slug) };
-      }).filter(function(r){ return r.title && r.url; });
-      callback(results);
-    })
-    .catch(function(){ callback([]); });
+// ── Contact Us ────────────────────────────────────────────────────────────────
+function openContact(){
+  document.getElementById('cpName').value=currentUser?currentUser.name:'';
+  document.getElementById('cpClient').value='';
+  document.getElementById('cpConcern').value='';
+  var st=document.getElementById('cpStatus');st.style.display='none';
+  var btn=document.getElementById('cpSendBtn');btn.disabled=true;btn.style.opacity='0.4';btn.style.cursor='not-allowed';btn.textContent='\u2709 Send Message';btn.style.background='#16a34a';
+  document.getElementById('cpOverlay').style.display='block';
+  var panel=document.getElementById('cpPanel');panel.style.display='flex';panel.style.transform='translateX(100%)';
+  setTimeout(function(){panel.style.transform='translateX(0)';},15);
 }
-
-function buildGuideResults(articles) {
-  if (!articles.length) return '';
-  var h = '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e2e8f0;">';
-  h += '<div style="font-size:.75rem;color:#64748b;font-weight:600;margin-bottom:6px;">&#128640; Related articles from <a href="'+SPROUT_GUIDE+'" target="_blank" style="color:#0369a1;text-decoration:underline;">Sprout Guide</a>:</div>';
-  articles.forEach(function(a){
-    h += '<a href="'+a.url+'" target="_blank" style="display:block;margin-bottom:5px;padding:6px 10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:7px;font-size:.8rem;color:#0369a1;text-decoration:none;">&#8599; '+esc(a.title)+'</a>';
-  });
-  h += '</div>';
-  return h;
+function closeContact(){
+  var panel=document.getElementById('cpPanel');panel.style.transform='translateX(100%)';
+  setTimeout(function(){panel.style.display='none';document.getElementById('cpOverlay').style.display='none';},300);
 }
-
-var LOGGER_URL    = 'https://script.google.com/macros/s/AKfycbxFabioWnT-LYIz2t-RrLjV33ZDyrk-gwfSnyc-RKZLBJ8WnocFzuhxRUOB578myR6vSw/exec';
-var CONTACT_EMAIL = 'abmanalastas@sprout.ph';
-
-// ── Contact Us ───────────────────────────────────────────────────────────────
-function openContact() {
-  document.getElementById('cpName').value    = currentUser ? currentUser.name : '';
-  document.getElementById('cpClient').value  = '';
-  document.getElementById('cpConcern').value = '';
-  var st = document.getElementById('cpStatus');
-  st.style.display = 'none';
-  var btn = document.getElementById('cpSendBtn');
-  btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
-  btn.textContent = '\u2709 Send Message'; btn.style.background = '#16a34a';
-  document.getElementById('cpOverlay').style.display = 'block';
-  var panel = document.getElementById('cpPanel');
-  panel.style.display = 'flex';
-  panel.style.transform = 'translateX(100%)';
-  setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 15);
+function updateCpBtn(){
+  var concern=(document.getElementById('cpConcern').value||'').trim();
+  var btn=document.getElementById('cpSendBtn');btn.disabled=!concern.length;btn.style.opacity=concern.length?'1':'0.4';btn.style.cursor=concern.length?'pointer':'not-allowed';
 }
-
-function closeContact() {
-  var panel = document.getElementById('cpPanel');
-  panel.style.transform = 'translateX(100%)';
-  setTimeout(function(){
-    panel.style.display = 'none';
-    document.getElementById('cpOverlay').style.display = 'none';
-  }, 300);
-}
-
-function updateCpBtn() {
-  var concern = (document.getElementById('cpConcern').value || '').trim();
-  var btn = document.getElementById('cpSendBtn');
-  btn.disabled = !concern.length;
-  btn.style.opacity = concern.length ? '1' : '0.4';
-  btn.style.cursor  = concern.length ? 'pointer' : 'not-allowed';
-}
-
-function sendContact() {
-  var name    = (document.getElementById('cpName').value    || '').trim();
-  var client  = (document.getElementById('cpClient').value  || '').trim();
-  var concern = (document.getElementById('cpConcern').value || '').trim();
-  if (!concern) return;
-  var btn = document.getElementById('cpSendBtn');
-  btn.disabled = true; btn.textContent = 'Sending...';
-  var payload = { type:'contact', name: name||(currentUser?currentUser.name:'Unknown'), email: currentUser?currentUser.email:'Unknown', clientName:client, concern:concern, to:CONTACT_EMAIL };
-  fetch(LOGGER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), mode:'no-cors' })
-  .then(function() {
-    var st = document.getElementById('cpStatus');
-    st.textContent = '\u2713 Message sent! We\'ll get back to you at ' + payload.email + ' soon.';
-    st.style.cssText = 'display:block;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;font-size:.78rem;padding:10px 13px;border-radius:9px;';
-    btn.textContent = '\u2713 Sent'; btn.style.background = '#15803d';
-    setTimeout(closeContact, 2500);
-  }).catch(function() {
-    var st = document.getElementById('cpStatus');
-    st.textContent = '\u26a0 Something went wrong. Please try again.';
-    st.style.cssText = 'display:block;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;font-size:.78rem;padding:10px 13px;border-radius:9px;';
-    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = '\u2709 Send Message';
+function sendContact(){
+  var name=(document.getElementById('cpName').value||'').trim();
+  var client=(document.getElementById('cpClient').value||'').trim();
+  var concern=(document.getElementById('cpConcern').value||'').trim();
+  if(!concern)return;
+  var btn=document.getElementById('cpSendBtn');btn.disabled=true;btn.textContent='Sending...';
+  var payload={type:'contact',name:name||(currentUser?currentUser.name:'Unknown'),email:currentUser?currentUser.email:'Unknown',clientName:client,concern:concern,to:CONTACT_EMAIL};
+  fetch(LOGGER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'})
+  .then(function(){
+    var st=document.getElementById('cpStatus');
+    st.textContent='\u2713 Message sent! We\'ll get back to you at '+payload.email+' soon.';
+    st.style.cssText='display:block;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;font-size:.78rem;padding:10px 13px;border-radius:9px;';
+    btn.textContent='\u2713 Sent';btn.style.background='#15803d';setTimeout(closeContact,2500);
+  }).catch(function(){
+    var st=document.getElementById('cpStatus');
+    st.textContent='\u26a0 Something went wrong. Please try again.';
+    st.style.cssText='display:block;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;font-size:.78rem;padding:10px 13px;border-radius:9px;';
+    btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';btn.textContent='\u2709 Send Message';
   });
 }
 
 // ── Unanswered question flow ──────────────────────────────────────────────────
-var pendingLog = null;
-
-function showSubmitFromGuide(question) {
-  pendingLog = { question: question, clientName: '', remarks: '' };
-  var uid = 'prompt_' + Date.now();
-  var html =
-    "&#128172; Send us a message and our team will get back to you as soon as possible!<br><br>" +
-    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
-    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
-    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "</div>" +
-    "<div style='display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;'>" +
-    "<button id='" + uid + "_submit' onclick='submitUnanswered()' disabled style='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
-    "<button id='" + uid + "_dismiss' style='background:#fff0f0;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
+var pendingLog=null;
+function makeSubmitHtml(uid,intro){
+  return intro+
+    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:10px;'>"+
+    "<input id='"+uid+"_client' type='text' placeholder='Client name' oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('"+uid+"');}\" style='border:1px solid var(--border2);border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;background:var(--surface);color:var(--text);'/>"+
+    "<input id='"+uid+"_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('"+uid+"');}\" style='border:1px solid var(--border2);border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;background:var(--surface);color:var(--text);'/>"+
+    "</div>"+
+    "<div style='display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;'>"+
+    "<button id='"+uid+"_submit' onclick='submitUnanswered()' disabled style='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>"+
+    "<button id='"+uid+"_dismiss' style='background:#fff0f0;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;' onclick='dismissSubmit(\""+uid+"\")'>&#10005; No thanks</button>"+
     "</div>";
-  pendingLog._uid = uid;
-  addMsg('bot', html);
 }
-
-function showSubmitPrompt(question) {
-  pendingLog = { question: question, clientName: '', remarks: '' };
-  var uid = 'prompt_' + Date.now();
-  var html =
-    "I couldn't find an answer to that. Would you like to submit it so our team can look into it?<br><br>" +
-    "<div style='display:flex;flex-direction:column;gap:8px;margin-top:4px;'>" +
-    "<input id='" + uid + "_client' type='text' placeholder='Client name' " +
-    "oninput=\"if(window.pendingLog){pendingLog.clientName=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "<input id='" + uid + "_remarks' type='text' placeholder='e.g. needed by Friday, details about the policy...' " +
-    "oninput=\"if(window.pendingLog){pendingLog.remarks=this.value;updateSubmitBtn('" + uid + "');}\" " +
-    "style='border:1px solid #cbd5e1;border-radius:8px;padding:8px 11px;font-size:.82rem;font-family:inherit;outline:none;width:100%;'/>" +
-    "</div>" +
-    "<div style='display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;'>" +
-    "<button id='" + uid + "_submit' onclick='submitUnanswered()' disabled style='background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;opacity:.4;cursor:not-allowed;'>&#128229; Submit</button>" +
-    "<button id='" + uid + "_dismiss' style='background:#fff0f0;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:20px;padding:6px 16px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;' onclick='dismissSubmit(\"" + uid + "\")'>&#10005; No thanks</button>" +
-    "</div>";
-  pendingLog._uid = uid;
-  addMsg('bot', html);
+function showSubmitFromGuide(question){
+  pendingLog={question:question,clientName:'',remarks:''};
+  var uid='prompt_'+Date.now();
+  pendingLog._uid=uid;
+  addMsg('bot',makeSubmitHtml(uid,'&#128172; Send us a message and our team will get back to you as soon as possible!'));
 }
-
-function updateSubmitBtn(uid) {
-  var btn = document.getElementById(uid + '_submit');
-  if (!btn) return;
-  var hasInput = (pendingLog.clientName||'').trim().length > 0 || (pendingLog.remarks||'').trim().length > 0;
-  btn.disabled = !hasInput; btn.style.opacity = hasInput?'1':'0.4'; btn.style.cursor = hasInput?'pointer':'not-allowed';
+function showSubmitPrompt(question){
+  pendingLog={question:question,clientName:'',remarks:''};
+  var uid='prompt_'+Date.now();
+  pendingLog._uid=uid;
+  addMsg('bot',makeSubmitHtml(uid,"I couldn't find an answer to that. Would you like to submit it so our team can look into it?"));
 }
-
-function disableSubmitButtons() {
-  if (!pendingLog || !pendingLog._uid) return;
-  var uid = pendingLog._uid;
-  ['_submit','_dismiss','_client','_remarks'].forEach(function(s){
-    var el = document.getElementById(uid+s);
-    if (el) { el.disabled = true; if(s==='_submit'||s==='_dismiss'){el.style.opacity='0.4';el.style.cursor='not-allowed';} }
-  });
+function updateSubmitBtn(uid){
+  var btn=document.getElementById(uid+'_submit');if(!btn)return;
+  var has=(pendingLog.clientName||'').trim().length>0||(pendingLog.remarks||'').trim().length>0;
+  btn.disabled=!has;btn.style.opacity=has?'1':'0.4';btn.style.cursor=has?'pointer':'not-allowed';
 }
-
-function dismissSubmit(uid) {
-  disableSubmitButtons(); pendingLog = null;
-  addMsg('bot',"No problem! Feel free to ask anything else, or contact <strong>Solutions Services</strong> directly. &#128522;");
+function disableSubmitButtons(){
+  if(!pendingLog||!pendingLog._uid)return;
+  var uid=pendingLog._uid;
+  ['_submit','_dismiss','_client','_remarks'].forEach(function(s){var el=document.getElementById(uid+s);if(el){el.disabled=true;if(s==='_submit'||s==='_dismiss'){el.style.opacity='0.4';el.style.cursor='not-allowed';}}});
 }
-
-function submitUnanswered() {
-  if (!pendingLog) return;
-  var clientName = (pendingLog.clientName||'').trim();
-  var remarks    = (pendingLog.remarks||'').trim();
-  if (!clientName && !remarks) return;
+function dismissSubmit(uid){disableSubmitButtons();pendingLog=null;addMsg('bot',"No problem! Feel free to ask anything else or use the <strong>Contact Us</strong> button. &#128522;");}
+function submitUnanswered(){
+  if(!pendingLog)return;
+  var cn=(pendingLog.clientName||'').trim(),rm=(pendingLog.remarks||'').trim();
+  if(!cn&&!rm)return;
   disableSubmitButtons();
-  var payload = { name: currentUser?currentUser.name:'Unknown', email: currentUser?currentUser.email:'Unknown', clientName:clientName, question:pendingLog.question, remarks:remarks };
-  pendingLog = null;
+  var payload={name:currentUser?currentUser.name:'Unknown',email:currentUser?currentUser.email:'Unknown',clientName:cn,question:pendingLog.question,remarks:rm};
+  pendingLog=null;
   fetch(LOGGER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'})
-  .then(function(){ addMsg('bot','&#10003; Got it! Your question has been logged and our team has been notified. We\'ll get back to you at <strong>'+payload.email+'</strong> as soon as possible.<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; Feel free to ask anything else!</div>'); })
-  .catch(function(){ addMsg('bot','&#9888; Something went wrong. Please contact <strong>Solutions Services</strong> directly.'); });
+  .then(function(){addMsg('bot','&#10003; Got it! Your question has been logged and our team has been notified. We\'ll get back to you at <strong>'+payload.email+'</strong> as soon as possible.<br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; Feel free to ask anything else!</div>');})
+  .catch(function(){addMsg('bot','&#9888; Something went wrong. Please contact <strong>Solutions Services</strong> directly.');});
 }
 
+// ── sendMessage ───────────────────────────────────────────────────────────────
 function sendMessage(){
   var input=document.getElementById('chatInput');
-  var q=input.value.trim();
-  if(!q)return;
-  input.value='';
+  var q=input.value.trim();if(!q)return;input.value='';
   if(q.toLowerCase().startsWith('debug:')){
-    var dq=q.slice(6).trim(); addMsg('user',q);
-    var kw=tokenize(dq), lines=['<strong>DEBUG:</strong> ['+kw.join(', ')+']<br><br>'];
+    var dq=q.slice(6).trim();addMsg('user',q);
+    var kw=tokenize(dq),lines=['<strong>DEBUG:</strong> ['+kw.join(', ')+']<br><br>'];
     var sc=entries.map(function(e){
       var req=e.requirement.toLowerCase(),res=e.resolution.toLowerCase(),mod=(e.module||'').toLowerCase(),item=(e.item||'').toLowerCase(),s=0,ph=kw.join(' ');
       if(req===ph)s+=120;else if(req.indexOf(ph)!==-1)s+=80;
-      if(kw.every(function(t){return req.indexOf(t)!==-1;})) s+=(kw.length>=2?60:40);
+      if(kw.every(function(t){return req.indexOf(t)!==-1;}))s+=(kw.length>=2?60:40);
       kw.forEach(function(t){if(item.indexOf(t)!==-1)s+=20;if(mod.indexOf(t)!==-1)s+=12;if(req.indexOf(t)!==-1)s+=15;if(res.indexOf(t)!==-1)s+=5;});
       var im=kw.filter(function(t){return mod.indexOf(t)!==-1;}),ii=kw.filter(function(t){return item.indexOf(t)!==-1;});
       if(im.length>0&&ii.length>0)s+=40;
@@ -797,107 +661,51 @@ function sendMessage(){
     }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,10);
     if(!sc.length)lines.push('No entries scored above 0.');
     else sc.forEach(function(x){lines.push('<span style="color:#15803d;font-weight:600;">['+x.score+']</span> '+x.tab+' | mod:<em>'+(x.mod||'—')+'</em> | item:<em>'+(x.item||'—')+'</em> | <em>'+x.req+'</em>');});
-    addMsg('bot',lines.join('<br>')); return;
+    addMsg('bot',lines.join('<br>'));return;
   }
-  addMsg('user',q); addTyping(); document.getElementById('sendBtn').disabled=true;
+  addMsg('user',q);addTyping();document.getElementById('sendBtn').disabled=true;
   setTimeout(function(){
-    removeTyping(); turnCount++;
+    removeTyping();turnCount++;
     var st=smallTalk(q);
     if(st){addMsg('bot',st);document.getElementById('sendBtn').disabled=false;return;}
-
-    // 2. Waiting for tab choice
-    if(ctx.pendingAction){
-      var t=detectTabChoice(q);
-      if(t){respondToTab(t);document.getElementById('sendBtn').disabled=false;return;}
-      ctx.pendingAction=null;ctx.pendingPayload=null;
-    }
-
-    // 3. Bare tab name follow-up - only fire for SHORT queries with no other intent
-    if(ctx.lastTab && q.trim().split(/\s+/).length <= 3 && !detectRecommendationIntent(q)){
-      var bareTab=detectTabChoice(q);
-      if(bareTab){
-        ctx.pendingAction='policyList'; ctx.pendingPayload=null;
-        respondToTab(bareTab); document.getElementById('sendBtn').disabled=false; return;
-      }
-    }
-
-    // 4. Recommendation follow-up — use inline tab if specified, else ctx.lastTab, else ask
+    if(ctx.pendingAction){var t=detectTabChoice(q);if(t){respondToTab(t);document.getElementById('sendBtn').disabled=false;return;}ctx.pendingAction=null;ctx.pendingPayload=null;}
+    if(ctx.lastTab&&q.trim().split(/\s+/).length<=3&&!detectRecommendationIntent(q)){var bt=detectTabChoice(q);if(bt){ctx.pendingAction='policyList';ctx.pendingPayload=null;respondToTab(bt);document.getElementById('sendBtn').disabled=false;return;}}
     if(detectRecommendationIntent(q)){
       var recTab=detectTabChoice(q)||ctx.lastTab;
-      if(recTab){
-        ctx.showRecommendations=true; ctx.lastTab=recTab;
-        var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-        addMsg('bot',buildPolicyList(recTab,true)+footer);
-        document.getElementById('sendBtn').disabled=false;return;
-      } else {
-        // No tab specified and no previous tab — ask
-        ctx.pendingAction='policyList';
-        ctx.pendingPayload=null;
-        ctx.showRecommendations=true;
-        addMsg('bot',tabPrompt('Sure! Would you like to see the recommendations for:'));
-        document.getElementById('sendBtn').disabled=false;return;
-      }
+      if(recTab){ctx.showRecommendations=true;ctx.lastTab=recTab;var footer2='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';addMsg('bot',buildPolicyList(recTab,true)+footer2);document.getElementById('sendBtn').disabled=false;return;}
+      else{ctx.pendingAction='policyList';ctx.pendingPayload=null;ctx.showRecommendations=true;addMsg('bot',tabPrompt('Sure! Would you like to see the recommendations for:'));document.getElementById('sendBtn').disabled=false;return;}
     }
-
-    // 5. Policy list intent
     if(detectPolicyListIntent(q)){
-      ctx.lastTopic=q; ctx.showRecommendations=detectRecommendationIntent(q);
+      ctx.lastTopic=q;ctx.showRecommendations=detectRecommendationIntent(q);
       var it=detectTabChoice(q);
-      if(it){
-        ctx.lastTab=it;
-        var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
-        addMsg('bot',buildPolicyList(it,ctx.showRecommendations)+footer);
-      } else {
-        ctx.pendingAction='policyList'; ctx.pendingPayload=null;
-        addMsg('bot',tabPrompt('Sure! Would you like to see the items for:'));
-      }
+      if(it){ctx.lastTab=it;var footer3='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';addMsg('bot',buildPolicyList(it,ctx.showRecommendations)+footer3);}
+      else{ctx.pendingAction='policyList';ctx.pendingPayload=null;addMsg('bot',tabPrompt('Sure! Would you like to see the items for:'));}
       document.getElementById('sendBtn').disabled=false;return;
     }
-
-    // 6. Follow-up tab switch: "what about payroll?"
     var sw=detectTabSwitch(q);
-    if(sw&&(ctx.lastTab||ctx.lastResults.length)){
-      ctx.pendingAction=ctx.lastResults.length?'search':'policyList';
-      ctx.pendingPayload=ctx.lastResults.length?ctx.lastResults:null;
-      respondToTab(sw);document.getElementById('sendBtn').disabled=false;return;
-    }
-
-    // 7. Regular KB search
-    var results=search(q);
-    ctx.lastResults=results; ctx.lastTopic=q; ctx.lastTab=null;
+    if(sw&&(ctx.lastTab||ctx.lastResults.length)){ctx.pendingAction=ctx.lastResults.length?'search':'policyList';ctx.pendingPayload=ctx.lastResults.length?ctx.lastResults:null;respondToTab(sw);document.getElementById('sendBtn').disabled=false;return;}
+    var results=search(q);ctx.lastResults=results;ctx.lastTopic=q;ctx.lastTab=null;
     var hasBoth=results.length>0&&results.some(function(e){return e.tab==='HR';})&&results.some(function(e){return e.tab==='Payroll';});
     if(hasBoth){ctx.pendingAction='search';ctx.pendingPayload=results;addMsg('bot',tabPrompt('I found results in both HR and Payroll. Which would you like to see?'));document.getElementById('sendBtn').disabled=false;return;}
     if(!results.length){
-      searchSproutGuide(q, function(articles){
+      searchSproutGuide(q,function(articles){
         if(articles.length){
-          // Scenario 2: not in KB but found in Sprout Guide
-          var guideMsg = '&#128640; I didn\'t find that in our internal knowledge base, but here are some related articles from <strong>Sprout Guide</strong>:<br><br>' + buildGuideResults(articles);
-          addMsg('bot', guideMsg);
-          // Separate follow-up message
+          addMsg('bot','&#128640; I didn\'t find that in our internal KB, but here are some related articles from <strong>Sprout Guide</strong>:<br><br>'+buildGuideResults(articles));
           setTimeout(function(){
-            addMsg('bot',
-              'If you still need help, feel free to submit a message below and our team will get back to you!' +
-              '<div style="margin-top:10px;">' +
-              '<button onclick="showSubmitFromGuide(\''+q.replace(/'/g,"\\'")+'\')" style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 18px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;">&#128229; Submit a message</button>' +
-              '</div>'
-            );
+            addMsg('bot','If you still need help, feel free to submit a message below and our team will get back to you!<div style="margin-top:10px;"><button onclick="showSubmitFromGuide(\''+q.replace(/'/g,"\\'")+'\')\" style="background:#f0fdf4;border:1.5px solid #86efac;color:#15803d;border-radius:20px;padding:6px 18px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;">&#128229; Submit a message</button></div>');
             document.getElementById('sendBtn').disabled=false;
-          }, 400);
+          },400);
         } else {
-          // Scenario 3: not found in KB or guide
-          showSubmitPrompt(q);
-          document.getElementById('sendBtn').disabled=false;
+          showSubmitPrompt(q);document.getElementById('sendBtn').disabled=false;
         }
       });
       return;
     }
-    // Scenario 1: KB found results — search guide in background and append
-    searchSproutGuide(q, function(articles){
-      var reply = buildReply(results);
-      if(articles.length) reply += buildGuideResults(articles);
-      if(results.length>0&&turnCount%3===0) reply+='<br><br><em style="color:#94a3b8;font-size:.8rem;">Is there anything else I can help you with?</em>';
-      addMsg('bot', reply);
-      document.getElementById('sendBtn').disabled=false;
+    searchSproutGuide(q,function(articles){
+      var reply=buildReply(results);
+      if(articles.length)reply+=buildGuideResults(articles);
+      if(results.length>0&&turnCount%3===0)reply+='<br><br><em style="color:var(--text4);font-size:.8rem;">Is there anything else I can help you with?</em>';
+      addMsg('bot',reply);document.getElementById('sendBtn').disabled=false;
     });
   },600);
 }
@@ -918,7 +726,6 @@ function addTyping(){
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
 function removeTyping(){var el=document.getElementById('typing');if(el)el.remove();}
-loadSheet();
 </script>
 </body>
 </html>
