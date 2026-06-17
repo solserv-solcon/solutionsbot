@@ -652,12 +652,17 @@ function search(q){
     var im=keywords.filter(function(t){return mod.indexOf(t)!==-1;}),ii=keywords.filter(function(t){return item.indexOf(t)!==-1;});
     if(im.length>0&&ii.length>0)s+=40;
     var rh=keywords.filter(function(t){return t.length>2&&req.indexOf(t)!==-1;}).length;
+    var ih=keywords.filter(function(t){return t.length>2&&item.indexOf(t)!==-1;}).length;
+    // For multi-keyword queries, require at least one keyword in requirement or item
+    if(keywords.length>=2&&rh===0&&ih===0)return{entry:e,score:0};
     if(keywords.length>=3&&rh/keywords.length<0.4)s=Math.floor(s*0.25);
     return{entry:e,score:s};
   }).filter(function(x){return x.score>=15;}).sort(function(a,b){return b.score-a.score;});
   if(!scored.length)return[];
-  if(scored.length>1&&scored[0].score<scored[1].score*1.2)return[scored[0].entry,scored[1].entry];
-  return[scored[0].entry];
+  var top=scored[0].score;
+  // Return all entries within 40% of the top score, up to 5
+  var results=scored.filter(function(x){return x.score>=top*0.6;}).slice(0,5).map(function(x){return x.entry;});
+  return results;
 }
 
 function formatEntry(e){
@@ -669,7 +674,10 @@ function formatEntry(e){
 }
 
 function buildReply(results){
-  var footer='<br><br><div style="border-left:3px solid #16a34a;padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>';
+  var footer=
+    '<br><br><div style="border-left:3px solid var(--accent);padding:8px 12px;margin-top:8px;font-size:.78rem;font-weight:600;font-style:italic;color:#15803d;">&#128172; If you have more questions, feel free to contact <strong>Solutions Services</strong>!</div>'+
+    '<div style="margin-top:8px;font-size:.78rem;color:var(--text3);">Not satisfied with the answer? '+
+    '<button onclick="showSubmitPrompt(window._lastQ||\'\')" style="background:none;border:none;color:var(--accent);font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;">Submit a message</button> and our team will look into it.</div>';
   if(!results.length)return rand(notFound);
   if(results.length===1)return rand(openers)+'<br><br>'+formatEntry(results[0])+footer;
   var h=rand(multiOpeners)+'<br><br>';
@@ -681,7 +689,10 @@ function smallTalk(q){
   var lower=q.toLowerCase().trim();
   if(greetings.some(function(g){return lower===g||lower.startsWith(g+' ')||lower.startsWith(g+'!');}))
     return rand(['Hi there! How can I help you today? Ask me about HR policies, payroll, leaves, and more! &#128522;','Hello! I\'m Athena, your Solutions Services KB assistant. What do you need help with? &#128202;','Hey! Happy to assist. Feel free to ask anything about our policies or procedures! &#128077;']);
-  if(thanks.some(function(t){return lower.indexOf(t)!==-1;}))
+  if(thanks.some(function(t){
+    if(t.length<=3) return new RegExp('\\b'+t+'\\b','i').test(lower);
+    return lower.indexOf(t)!==-1;
+  }))
     return rand(['You are welcome! Let me know if you have other questions. &#128522;','Happy to help! Anything else I can assist you with? &#128202;','No problem at all! Come back anytime. &#128077;']);
   if(howAreYou.some(function(h){return lower.indexOf(h)!==-1;}))
     return rand(['I\'m doing great, thanks for asking! How can I help you today? &#128522;','All good here and ready to help! What is your question? &#128202;']);
@@ -857,6 +868,7 @@ function sendMessage(){
       return;
     }
     searchSproutGuide(q,function(articles){
+      window._lastQ=q;
       var reply=buildReply(results);
       if(articles.length)reply+=buildGuideResults(articles);
       if(results.length>0&&turnCount%3===0)reply+='<br><br><em style="color:var(--text4);font-size:.8rem;">Is there anything else I can help you with?</em>';
