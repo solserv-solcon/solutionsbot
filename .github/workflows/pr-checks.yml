@@ -1,0 +1,38 @@
+name: pr-checks
+
+on:
+  pull_request:
+    branches: [develop, production]
+
+jobs:
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail on key patterns
+        run: |
+          if grep -rEn "AIza[0-9A-Za-z_-]{20,}|gsk_[0-9A-Za-z]{20,}|sk-[0-9A-Za-z]{20,}" --include="*.ts" --include="*.vue" --include="*.js" --include="*.html" --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "Possible hardcoded key found"; exit 1
+          fi
+
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for package.json
+        id: pkg
+        run: |
+          if [ -f package.json ]; then echo "exists=true" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.pkg.outputs.exists == 'true'
+        with:
+          node-version: 20
+          cache: npm
+      - if: steps.pkg.outputs.exists == 'true'
+        run: npm ci
+      - if: steps.pkg.outputs.exists == 'true'
+        run: npx vue-tsc --noEmit
+      - if: steps.pkg.outputs.exists == 'true'
+        run: npx vitest run
+      - if: steps.pkg.outputs.exists == 'true'
+        run: npm run build

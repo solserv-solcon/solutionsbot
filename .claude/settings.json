@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx vue-tsc:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout -b:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr comment:*)"
+    ],
+    "deny": [
+      "Bash(git push origin main:*)",
+      "Bash(git push origin develop:*)",
+      "Bash(git push origin production:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git merge:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout main:*)",
+      "Bash(git checkout production:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh pr review:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/block-main-edits.sh" }
+        ]
+      }
+    ]
+  }
+}
